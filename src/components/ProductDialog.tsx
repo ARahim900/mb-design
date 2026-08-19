@@ -29,6 +29,7 @@ function DetailRow({ title, body }: DetailRowProps) {
 
 export function ProductDialog({ locale, product, onClose, onAddToCart }: ProductDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const scrollRegionRef = useRef<HTMLDivElement>(null);
   const sizeGroupRef = useRef<HTMLFieldSetElement>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
@@ -38,7 +39,9 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
     if (!dialog) return;
 
     if (product && !dialog.open) {
+      if (scrollRegionRef.current) scrollRegionRef.current.scrollTop = 0;
       dialog.showModal();
+      if (scrollRegionRef.current) scrollRegionRef.current.scrollTop = 0;
       setSelectedSize(null);
       setSizeError(false);
     } else if (!product && dialog.open) {
@@ -73,7 +76,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
   return (
     <dialog
       ref={dialogRef}
-      className="relative m-auto h-svh max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_24px_90px_rgba(28,20,23,0.35)] backdrop:bg-date/80 sm:h-[min(92svh,920px)] sm:w-[min(94vw,1420px)]"
+      className="fixed inset-0 m-auto h-svh max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_24px_90px_rgba(28,20,23,0.35)] backdrop:bg-date/80 sm:h-[min(92svh,920px)] sm:w-[min(94vw,1420px)]"
       aria-label={product ? localize(product.name, locale) : undefined}
       onClose={onClose}
       onClick={handleBackdropClick}
@@ -88,7 +91,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           >
             <X aria-hidden="true" size={23} strokeWidth={1.25} />
           </button>
-          <div className="grid h-full overflow-y-auto overscroll-contain lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:[direction:ltr]">
+          <div ref={scrollRegionRef} className="grid h-full overflow-y-auto overscroll-contain lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:[direction:ltr]">
           <div className="relative h-[40svh] min-h-[280px] max-h-[430px] overflow-hidden bg-sand lg:h-auto lg:min-h-0 lg:max-h-none">
             <img
               src={product.image}
