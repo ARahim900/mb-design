@@ -55,13 +55,13 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
         <div className="flex items-center justify-self-start">
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper md:hidden"
+            className={`flex h-12 w-12 items-center justify-center border shadow-[0_8px_24px_rgba(28,20,23,0.2)] backdrop-blur-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper md:hidden ${menuOpen ? 'border-copper bg-date text-copper' : 'border-pearl/45 bg-date/55 text-pearl hover:border-copper hover:text-copper'}`}
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             aria-label={localize(menuOpen ? copy.header.menuClose : copy.header.menuOpen, locale)}
             onClick={() => setMenuOpen((isOpen) => !isOpen)}
           >
-            {menuOpen ? <X aria-hidden="true" size={25} strokeWidth={1.3} /> : <Menu aria-hidden="true" size={26} strokeWidth={1.3} />}
+            {menuOpen ? <X aria-hidden="true" size={24} strokeWidth={1.7} /> : <Menu aria-hidden="true" size={25} strokeWidth={1.7} />}
           </button>
 
           <nav className="hidden items-center gap-8 text-[13px] md:flex lg:gap-11" aria-label={navLabel}>
@@ -108,18 +108,21 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
       {menuOpen && (
         <nav
           id="mobile-navigation"
-          className="absolute inset-x-0 top-full border-b border-copper/50 bg-date/98 px-6 py-8 shadow-[0_22px_50px_rgba(28,20,23,0.35)] backdrop-blur-md md:hidden"
+          className="absolute inset-x-0 top-full max-h-[calc(100svh-76px)] overflow-y-auto border-y border-copper/60 bg-date px-5 py-3 shadow-[0_22px_50px_rgba(28,20,23,0.45)] md:hidden"
           aria-label={navLabel}
         >
-          <div className="flex flex-col divide-y divide-copper/25 font-display text-3xl">
-            <a className="py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#collection" onClick={closeMenu}>
-              {localize(copy.nav.collection, locale)}
+          <div className="flex flex-col divide-y divide-copper/30 text-xl font-medium">
+            <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#collection" onClick={closeMenu}>
+              <span>{localize(copy.nav.collection, locale)}</span>
+              <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">01</span>
             </a>
-            <a className="py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#craft" onClick={closeMenu}>
-              {localize(copy.nav.craft, locale)}
+            <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#craft" onClick={closeMenu}>
+              <span>{localize(copy.nav.craft, locale)}</span>
+              <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">02</span>
             </a>
-            <a className="py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#story" onClick={closeMenu}>
-              {localize(copy.nav.about, locale)}
+            <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#story" onClick={closeMenu}>
+              <span>{localize(copy.nav.about, locale)}</span>
+              <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">03</span>
             </a>
           </div>
         </nav>
