@@ -1,6 +1,7 @@
 import { ChevronDown, Scissors, X } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import { copy, formatOmr, localize } from '../data/content';
+import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { CustomFit, Locale, Product } from '../types';
 import { CustomFitPanel, type CustomFitDraft } from './CustomFitPanel';
 
@@ -44,6 +45,8 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
   const [customFitEnabled, setCustomFitEnabled] = useState(false);
   const [customFit, setCustomFit] = useState<CustomFitDraft>(EMPTY_CUSTOM_FIT);
   const [customFitError, setCustomFitError] = useState(false);
+
+  useModalScrollLock(product !== null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -121,7 +124,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 m-auto h-svh max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_24px_90px_rgba(28,20,23,0.35)] backdrop:bg-date/80 sm:h-[min(92svh,920px)] sm:w-[min(94vw,1420px)]"
+      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_24px_90px_rgba(28,20,23,0.35)] backdrop:bg-date/80 sm:m-auto sm:h-[min(92svh,920px)] sm:w-[min(94vw,1420px)]"
       aria-label={product ? localize(product.name, locale) : undefined}
       onClose={onClose}
       onClick={handleBackdropClick}

@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Minus, Plus, Trash2, X } from 'lucide-react';
 import { type FormEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { copy, formatOmr, localize } from '../data/content';
+import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { CartLine, Locale } from '../types';
 import { BrandWordmark } from './BrandWordmark';
 
@@ -34,8 +35,11 @@ function getCustomFitSummary(line: CartLine, locale: Locale): string {
 
 export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: CartDrawerProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const scrollRegionRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<CartView>('bag');
   const BackArrow = locale === 'ar' ? ArrowRight : ArrowLeft;
+
+  useModalScrollLock(open);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -43,6 +47,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
 
     if (open && !dialog.open) {
       dialog.showModal();
+      if (scrollRegionRef.current) scrollRegionRef.current.scrollTop = 0;
       setView('bag');
     } else if (!open && dialog.open) {
       dialog.close();
@@ -66,7 +71,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
   return (
     <dialog
       ref={dialogRef}
-      className="ms-auto me-0 h-svh max-h-none w-full max-w-none bg-pearl p-0 text-ink shadow-[0_0_70px_rgba(28,20,23,0.3)] backdrop:bg-date/80 sm:max-w-[500px]"
+      className="fixed inset-0 my-0 ms-auto me-0 h-[100dvh] max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_0_70px_rgba(28,20,23,0.3)] backdrop:bg-date/80 sm:max-w-[500px]"
       aria-labelledby="cart-title"
       onClose={onClose}
       onClick={handleBackdropClick}
@@ -100,7 +105,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
 
         {view === 'bag' && (
           <>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-7 sm:py-7">
+            <div ref={scrollRegionRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-7 sm:py-7">
               {cart.length === 0 ? (
                 <div className="flex h-full min-h-[300px] items-center justify-center text-center">
                   <p className="font-display text-2xl text-shade">{localize(copy.cart.empty, locale)}</p>
