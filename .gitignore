@@ -1,0 +1,10 @@
+.DS_Store
+.vercel/
+design-reference/
+dist/
+node_modules/
+preview/
+public/assets/collection-v2/*.png
+public/icons/* 2.png
+public/icons/* 3.png
+*.tsbuildinfo

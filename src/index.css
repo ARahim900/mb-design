@@ -1,0 +1,210 @@
+@import '@fontsource/aref-ruqaa/arabic-400.css';
+@import '@fontsource/aref-ruqaa/arabic-700.css';
+@import '@fontsource/bodoni-moda/latin-400.css';
+@import '@fontsource/bodoni-moda/latin-500.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
+@import '@fontsource/ibm-plex-sans-arabic/arabic-500.css';
+@import '@fontsource/manrope/latin-400.css';
+@import '@fontsource/manrope/latin-500.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: #1c1417;
+    background: #fff9f2;
+    font-family: "IBM Plex Sans Arabic", Manrope, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 76px;
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  main:focus-visible {
+    outline: 2px solid #b8744d;
+    outline-offset: -4px;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background: #fff9f2;
+    overscroll-behavior-y: none;
+  }
+
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
+
+  button,
+  summary,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  dialog {
+    color: inherit;
+  }
+
+  dialog[open] {
+    animation: dialog-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  ::selection {
+    color: #fff9f2;
+    background: #7b2142;
+  }
+}
+
+@layer components {
+  .button-primary {
+    @apply inline-flex items-center justify-center border border-copper bg-date text-center text-sm text-pearl transition duration-300 ease-quiet hover:-translate-y-0.5 hover:bg-pomegranate focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper motion-reduce:transition-none;
+  }
+
+  .button-outline-light {
+    @apply inline-flex items-center justify-center border border-copper bg-transparent text-center text-sm text-pearl transition-colors duration-300 hover:bg-copper hover:text-date focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper;
+  }
+
+  .hero-cta {
+    @apply inline-flex items-center justify-between gap-5 border border-pearl bg-pearl text-center text-sm font-medium text-date shadow-[0_14px_34px_rgba(28,20,23,0.28)] transition duration-300 ease-quiet hover:-translate-y-0.5 hover:border-copper hover:bg-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper motion-reduce:transition-none;
+  }
+
+  .nav-link,
+  .footer-link {
+    @apply relative min-h-11 py-3 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper;
+  }
+
+  .nav-link::after,
+  .footer-link::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    bottom: 0.4rem;
+    width: 0;
+    height: 1px;
+    background: #b8744d;
+    transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link:hover::after,
+  .footer-link:hover::after {
+    width: 100%;
+  }
+
+  .form-field {
+    @apply block text-sm text-shade;
+  }
+
+  .form-field input,
+  .form-field textarea {
+    @apply mt-2 w-full border border-hair bg-transparent px-4 py-3 text-base text-ink outline-none transition-colors focus:border-copper;
+  }
+
+  .display-heading {
+    @apply font-display font-normal tracking-[-0.025em];
+  }
+}
+
+.hero-wash {
+  background: linear-gradient(180deg, rgba(28, 20, 23, 0.08) 30%, rgba(39, 19, 29, 0.72) 100%);
+}
+
+.shadow-button {
+  box-shadow: 0 12px 28px rgba(39, 19, 29, 0.16);
+}
+
+.shadow-card {
+  box-shadow: 0 10px 28px rgba(39, 19, 29, 0.07);
+}
+
+.shadow-card:hover {
+  box-shadow: 0 18px 42px rgba(39, 19, 29, 0.13);
+}
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+}
+
+.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 780px;
+}
+
+@media (min-width: 1024px) {
+  html {
+    scroll-padding-top: 98px;
+  }
+
+  .hero-wash {
+    background: linear-gradient(90deg, rgba(28, 20, 23, 0.04) 35%, rgba(39, 19, 29, 0.34) 100%);
+  }
+}
+
+.brand-latin {
+  font-family: "Bodoni Moda", serif;
+  letter-spacing: 0.24em;
+}
+
+.collection-rail {
+  scrollbar-color: #b8744d transparent;
+  scrollbar-width: thin;
+}
+
+.collection-rail::-webkit-scrollbar {
+  height: 3px;
+}
+
+.collection-rail::-webkit-scrollbar-thumb {
+  background: #b8744d;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
