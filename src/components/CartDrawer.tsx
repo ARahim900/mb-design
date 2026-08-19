@@ -9,10 +9,28 @@ interface CartDrawerProps {
   readonly open: boolean;
   readonly cart: readonly CartLine[];
   readonly onClose: () => void;
-  readonly onQuantityChange: (productId: string, size: string, quantity: number) => void;
+  readonly onQuantityChange: (lineId: string, quantity: number) => void;
 }
 
 type CartView = 'bag' | 'checkout' | 'confirmed';
+
+function getCustomFitSummary(line: CartLine, locale: Locale): string {
+  if (!line.customFit) return '';
+
+  const customCopy = copy.product.customFit;
+  const unit = localize(customCopy.unit, locale);
+  const details = [
+    line.customFit.lengthCm
+      ? `${localize(customCopy.length, locale)}: ${line.customFit.lengthCm} ${unit}`
+      : null,
+    line.customFit.sleeveCm
+      ? `${localize(customCopy.sleeve, locale)}: ${line.customFit.sleeveCm} ${unit}`
+      : null,
+    line.customFit.fit === 'relaxed' ? localize(customCopy.relaxed, locale) : null,
+  ];
+
+  return details.filter((detail): detail is string => detail !== null).join(' · ');
+}
 
 export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: CartDrawerProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -90,7 +108,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
               ) : (
                 <div className="divide-y divide-hair">
                   {cart.map((line) => (
-                    <article key={`${line.product.id}-${line.size}`} className="grid grid-cols-[88px_minmax(0,1fr)] gap-4 py-5 first:pt-0 sm:grid-cols-[104px_1fr] sm:gap-5 sm:py-6">
+                    <article key={line.id} className="grid grid-cols-[88px_minmax(0,1fr)] gap-4 py-5 first:pt-0 sm:grid-cols-[104px_1fr] sm:gap-5 sm:py-6">
                       <div className="aspect-[4/5] overflow-hidden bg-sand">
                         <img
                           src={line.product.image}
@@ -106,12 +124,20 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
                           <div>
                             <h3 className="font-display text-2xl">{localize(line.product.name, locale)}</h3>
                             <p className="mt-1 text-xs text-shade">{localize(copy.product.size, locale)}: {line.size}</p>
+                            {line.customFit && (
+                              <div className="mt-2 border-s border-copper/70 ps-2 text-[11px] leading-5 text-shade">
+                                <p className="font-medium text-copper-deep">
+                                  {localize(copy.product.customFit.cartLabel, locale)}
+                                </p>
+                                <p>{getCustomFitSummary(line, locale)}</p>
+                              </div>
+                            )}
                             <p className="mt-3 text-sm tabular-nums">{formatOmr(line.product.priceOmr, locale)}</p>
                           </div>
                           <button
                             type="button"
                             className="flex h-11 w-11 shrink-0 items-center justify-center text-shade transition-colors hover:text-pomegranate focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
-                            onClick={() => onQuantityChange(line.product.id, line.size, 0)}
+                            onClick={() => onQuantityChange(line.id, 0)}
                             aria-label={`${localize(copy.cart.remove, locale)} ${localize(line.product.name, locale)}`}
                           >
                             <Trash2 aria-hidden="true" size={17} strokeWidth={1.25} />
@@ -121,7 +147,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
                           <button
                             type="button"
                             className="flex h-11 w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
-                            onClick={() => onQuantityChange(line.product.id, line.size, line.quantity - 1)}
+                            onClick={() => onQuantityChange(line.id, line.quantity - 1)}
                             aria-label={localize(copy.cart.decrease, locale)}
                           >
                             <Minus aria-hidden="true" size={15} />
@@ -130,7 +156,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
                           <button
                             type="button"
                             className="flex h-11 w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
-                            onClick={() => onQuantityChange(line.product.id, line.size, line.quantity + 1)}
+                            onClick={() => onQuantityChange(line.id, line.quantity + 1)}
                             aria-label={localize(copy.cart.increase, locale)}
                           >
                             <Plus aria-hidden="true" size={15} />

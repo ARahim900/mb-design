@@ -76,6 +76,35 @@ export const copy = {
   product: {
     size: { ar: 'المقاس', en: 'Size' },
     chooseSize: { ar: 'اختاري المقاس أولاً', en: 'Choose a size first' },
+    customFit: {
+      action: { ar: 'خصّصي هذا المقاس', en: 'Customise this size' },
+      remove: { ar: 'إلغاء التعديلات', en: 'Remove adjustments' },
+      title: { ar: 'تعديلات بسيطة', en: 'Simple adjustments' },
+      intro: {
+        ar: 'يبقى المقاس المختار هو الأساس. أضيفي فقط التعديلات التي تحتاجينها.',
+        en: 'Your selected size remains the base. Add only the adjustments you need.',
+      },
+      length: { ar: 'الطول الكامل', en: 'Overall length' },
+      lengthHelp: {
+        ar: 'من أعلى الكتف إلى الطول المطلوب.',
+        en: 'Measure from the shoulder to the desired hem.',
+      },
+      sleeve: { ar: 'طول الكم', en: 'Sleeve length' },
+      sleeveHelp: {
+        ar: 'من نقطة الكتف إلى المعصم.',
+        en: 'Measure from the shoulder point to the wrist.',
+      },
+      bodyFit: { ar: 'اتساع القصّة', en: 'Body fit' },
+      bodyFitHelp: {
+        ar: 'حافظي على القصّة الأصلية أو اختاري اتساعاً أكبر.',
+        en: 'Keep the original cut or allow more room.',
+      },
+      standard: { ar: 'أساسي', en: 'Standard' },
+      relaxed: { ar: 'أوسع', en: 'Relaxed' },
+      unit: { ar: 'سم', en: 'cm' },
+      addOne: { ar: 'أضيفي تعديلاً واحداً على الأقل.', en: 'Add at least one adjustment.' },
+      cartLabel: { ar: 'تعديلات المقاس', en: 'Custom adjustments' },
+    },
     add: { ar: 'أضيفي إلى الحقيبة', en: 'Add to bag' },
     specifications: { ar: 'مواصفات القطعة', en: 'Product specifications' },
     fabric: { ar: 'الخامة', en: 'Fabric' },

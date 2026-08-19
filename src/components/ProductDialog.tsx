@@ -1,13 +1,20 @@
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, Scissors, X } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import { copy, formatOmr, localize } from '../data/content';
-import type { Locale, Product } from '../types';
+import type { CustomFit, Locale, Product } from '../types';
+import { CustomFitPanel, type CustomFitDraft } from './CustomFitPanel';
+
+const EMPTY_CUSTOM_FIT: CustomFitDraft = {
+  lengthCm: '',
+  sleeveCm: '',
+  fit: 'standard',
+};
 
 interface ProductDialogProps {
   readonly locale: Locale;
   readonly product: Product | null;
   readonly onClose: () => void;
-  readonly onAddToCart: (product: Product, size: string) => void;
+  readonly onAddToCart: (product: Product, size: string, customFit?: CustomFit) => void;
 }
 
 interface DetailRowProps {
@@ -31,8 +38,12 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
   const dialogRef = useRef<HTMLDialogElement>(null);
   const scrollRegionRef = useRef<HTMLDivElement>(null);
   const sizeGroupRef = useRef<HTMLFieldSetElement>(null);
+  const customFitRef = useRef<HTMLDivElement>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
+  const [customFitEnabled, setCustomFitEnabled] = useState(false);
+  const [customFit, setCustomFit] = useState<CustomFitDraft>(EMPTY_CUSTOM_FIT);
+  const [customFitError, setCustomFitError] = useState(false);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -44,6 +55,9 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
       if (scrollRegionRef.current) scrollRegionRef.current.scrollTop = 0;
       setSelectedSize(null);
       setSizeError(false);
+      setCustomFitEnabled(false);
+      setCustomFit(EMPTY_CUSTOM_FIT);
+      setCustomFitError(false);
     } else if (!product && dialog.open) {
       dialog.close();
     }
@@ -57,7 +71,38 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
       sizeGroupRef.current?.querySelector('button')?.focus();
       return;
     }
-    onAddToCart(product, selectedSize);
+
+    if (!customFitEnabled) {
+      onAddToCart(product, selectedSize);
+      return;
+    }
+
+    const lengthCm = customFit.lengthCm.trim();
+    const sleeveCm = customFit.sleeveCm.trim();
+    if (!lengthCm && !sleeveCm && customFit.fit === 'standard') {
+      setCustomFitError(true);
+      customFitRef.current?.scrollIntoView({ block: 'center' });
+      customFitRef.current?.querySelector('input')?.focus();
+      return;
+    }
+
+    onAddToCart(product, selectedSize, {
+      ...(lengthCm ? { lengthCm } : {}),
+      ...(sleeveCm ? { sleeveCm } : {}),
+      fit: customFit.fit,
+    });
+  };
+
+  const handleCustomFitToggle = () => {
+    if (customFitEnabled) {
+      setCustomFitEnabled(false);
+      setCustomFit(EMPTY_CUSTOM_FIT);
+      setCustomFitError(false);
+      return;
+    }
+
+    setCustomFitEnabled(true);
+    requestAnimationFrame(() => customFitRef.current?.scrollIntoView({ block: 'nearest' }));
   };
 
   const handleBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
@@ -140,6 +185,38 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
                 )}
               </fieldset>
 
+              <button
+                type="button"
+                className="mt-4 flex min-h-12 w-full items-center justify-between gap-4 border border-copper/55 bg-transparent px-4 text-sm text-date transition-colors hover:border-copper-deep hover:bg-sand/35 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper"
+                aria-expanded={customFitEnabled}
+                onClick={handleCustomFitToggle}
+              >
+                <span className="flex items-center gap-3">
+                  <Scissors aria-hidden="true" size={18} strokeWidth={1.25} className="text-copper-deep" />
+                  {localize(
+                    customFitEnabled ? copy.product.customFit.remove : copy.product.customFit.action,
+                    locale,
+                  )}
+                </span>
+                <span aria-hidden="true" className="font-display text-xl text-copper-deep">
+                  {customFitEnabled ? '−' : '+'}
+                </span>
+              </button>
+
+              {customFitEnabled && (
+                <div ref={customFitRef} className="mt-3 scroll-mt-6">
+                  <CustomFitPanel
+                    locale={locale}
+                    value={customFit}
+                    hasError={customFitError}
+                    onChange={(value) => {
+                      setCustomFit(value);
+                      setCustomFitError(false);
+                    }}
+                  />
+                </div>
+              )}
+
               <section className="mt-8" aria-labelledby="product-specifications">
                 <h3 id="product-specifications" className="text-xs font-medium uppercase tracking-[0.12em] text-copper-deep">
                   {localize(copy.product.specifications, locale)}
@@ -175,7 +252,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           >
             <p className={`mb-2 text-xs ${selectedSize ? 'text-shade' : 'text-copper-deep'}`}>
               {selectedSize
-                ? `${localize(copy.product.size, locale)} · ${selectedSize}`
+                ? `${localize(copy.product.size, locale)} · ${selectedSize}${customFitEnabled ? ` · ${localize(copy.product.customFit.title, locale)}` : ''}`
                 : localize(copy.product.chooseSize, locale)}
             </p>
             <button type="button" className="button-primary min-h-14 w-full px-6 py-3 shadow-button" onClick={handleAdd}>

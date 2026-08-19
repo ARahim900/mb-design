@@ -18,8 +18,18 @@ export interface Product {
   readonly sizes: readonly string[];
 }
 
+export type FitPreference = 'standard' | 'relaxed';
+
+export interface CustomFit {
+  readonly lengthCm?: string;
+  readonly sleeveCm?: string;
+  readonly fit: FitPreference;
+}
+
 export interface CartLine {
+  readonly id: string;
   readonly product: Product;
   readonly size: string;
+  readonly customFit?: CustomFit;
   readonly quantity: number;
 }

@@ -8,7 +8,7 @@ import { Hero } from './components/Hero';
 import { ProductDialog } from './components/ProductDialog';
 import { Services } from './components/Services';
 import { Story } from './components/Story';
-import type { CartLine, Locale, Product } from './types';
+import type { CartLine, CustomFit, Locale, Product } from './types';
 
 function App() {
   const [locale, setLocale] = useState<Locale>('ar');
@@ -27,15 +27,32 @@ function App() {
     [cart],
   );
 
-  const handleAddToCart = (product: Product, size: string) => {
+  const handleAddToCart = (product: Product, size: string, customFit?: CustomFit) => {
+    const lineId = [
+      product.id,
+      size,
+      customFit?.lengthCm ?? '',
+      customFit?.sleeveCm ?? '',
+      customFit?.fit ?? '',
+    ].join(':');
+
     setCart((current) => {
-      const existing = current.find((line) => line.product.id === product.id && line.size === size);
+      const existing = current.find((line) => line.id === lineId);
       if (!existing) {
-        return [...current, { product, size, quantity: 1 }];
+        return [
+          ...current,
+          {
+            id: lineId,
+            product,
+            size,
+            ...(customFit ? { customFit } : {}),
+            quantity: 1,
+          },
+        ];
       }
 
       return current.map((line) =>
-        line.product.id === product.id && line.size === size
+        line.id === lineId
           ? { ...line, quantity: line.quantity + 1 }
           : line,
       );
@@ -44,12 +61,12 @@ function App() {
     setCartOpen(true);
   };
 
-  const handleQuantityChange = (productId: string, size: string, quantity: number) => {
+  const handleQuantityChange = (lineId: string, quantity: number) => {
     setCart((current) =>
       quantity <= 0
-        ? current.filter((line) => !(line.product.id === productId && line.size === size))
+        ? current.filter((line) => line.id !== lineId)
         : current.map((line) =>
-            line.product.id === productId && line.size === size ? { ...line, quantity } : line,
+            line.id === lineId ? { ...line, quantity } : line,
           ),
     );
   };
