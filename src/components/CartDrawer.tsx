@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, Minus, Plus, Trash2, X } from 'lucide-react';
 import { type FormEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { copy, formatOmr, localize } from '../data/content';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { CartLine, Locale } from '../types';
@@ -68,7 +69,9 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
     if (event.target === dialogRef.current) onClose();
   };
 
-  return (
+  // Portalled into <body> for the same reason as the product sheet: no app-shell ancestor can
+  // then become the containing block for this fixed-position drawer.
+  return createPortal(
     <dialog
       ref={dialogRef}
       className="fixed inset-0 my-0 ms-auto me-0 h-[100dvh] max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_0_70px_rgba(28,20,23,0.3)] backdrop:bg-date/80 sm:max-w-[500px]"
@@ -232,6 +235,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
           </div>
         )}
       </div>
-    </dialog>
+    </dialog>,
+    document.body,
   );
 }

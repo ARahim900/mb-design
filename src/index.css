@@ -58,11 +58,12 @@
     color: inherit;
   }
 
-  /* No fill mode: `both` would leave `transform: translateY(0)` on the dialog for as long as
-     it stays open, which makes it a containing block for its fixed descendants and has a
-     history of confusing fixed-position compositing in mobile WebKit. */
+  /* Opacity only, and no fill mode. A transform on the dialog — even the `translateY(0)` that
+     an `animation-fill-mode: both` would leave behind permanently — promotes a fixed-position
+     top-layer element to its own compositing layer, which mobile WebKit has a long history of
+     failing to keep anchored to the viewport. Not worth a 12px rise. */
   dialog[open] {
-    animation: dialog-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    animation: dialog-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   ::selection {
@@ -189,11 +190,9 @@ summary::-webkit-details-marker {
 @keyframes dialog-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 

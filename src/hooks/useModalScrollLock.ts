@@ -1,77 +1,51 @@
 import { useEffect } from 'react';
 
-/**
- * Body properties the lock owns. Whatever the page had inline before the lock is
- * captured so the release restores it instead of blindly clearing it.
- */
-const LOCKED_PROPERTIES = [
-  'position',
-  'top',
-  'left',
-  'right',
-  'width',
-  'overflow',
-  'padding-inline-end',
-] as const;
-
-interface RestorePoint {
-  readonly scrollY: number;
-  readonly scrollBehavior: string;
-  readonly body: ReadonlyArray<readonly [property: string, value: string]>;
+interface Snapshot {
+  readonly element: HTMLElement;
+  readonly property: string;
+  readonly value: string;
 }
 
 let lockCount = 0;
-let restorePoint: RestorePoint | null = null;
+let snapshots: Snapshot[] = [];
+
+/** Sets an inline style, remembering whatever was there so the release can put it back. */
+function lockStyle(element: HTMLElement, property: string, value: string) {
+  snapshots.push({ element, property, value: element.style.getPropertyValue(property) });
+  element.style.setProperty(property, value);
+}
 
 function applyLock() {
   const root = document.documentElement;
   const { body } = document;
-  const scrollY = window.scrollY;
   const scrollbarWidth = window.innerWidth - root.clientWidth;
 
-  restorePoint = {
-    scrollY,
-    scrollBehavior: root.style.scrollBehavior,
-    body: LOCKED_PROPERTIES.map((property) => [property, body.style.getPropertyValue(property)] as const),
-  };
+  // Hiding overflow on both the root and the body is what stops the page scrolling behind an
+  // open dialog, Safari included. The document is deliberately NOT moved: the older trick of
+  // pinning the body at a negative offset displaces anything the browser happens to position
+  // against the body, which is the exact failure being fixed here. If some engine ignores this
+  // and lets the page scroll anyway, the dialog stays pinned regardless — the page just drifts
+  // behind it, which is cosmetic.
+  lockStyle(root, 'overflow', 'hidden');
+  lockStyle(body, 'overflow', 'hidden');
 
-  // `scroll-behavior: smooth` is set globally; restoring the scroll position must be instant.
-  root.style.scrollBehavior = 'auto';
-
-  // Pinning the body is the only scroll lock iOS Safari honours reliably. It also parks the
-  // document at offset 0 for as long as the dialog is open, so a browser that mispositions a
-  // top-layer dialog still lands it inside the viewport instead of above it.
-  body.style.setProperty('position', 'fixed');
-  body.style.setProperty('top', `${-scrollY}px`);
-  body.style.setProperty('left', '0');
-  body.style.setProperty('right', '0');
-  body.style.setProperty('width', '100%');
-  body.style.setProperty('overflow', 'hidden');
-  if (scrollbarWidth > 0) body.style.setProperty('padding-inline-end', `${scrollbarWidth}px`);
+  // Removing the scrollbar would otherwise shift the page sideways under the backdrop.
+  if (scrollbarWidth > 0) lockStyle(body, 'padding-inline-end', `${scrollbarWidth}px`);
 }
 
 function releaseLock() {
-  if (!restorePoint) return;
-
-  const root = document.documentElement;
-  const { body } = document;
-  const { scrollY, scrollBehavior, body: previous } = restorePoint;
-  restorePoint = null;
-
-  previous.forEach(([property, value]) => {
-    if (value) body.style.setProperty(property, value);
-    else body.style.removeProperty(property);
-  });
-
-  window.scrollTo(0, scrollY);
-  if (scrollBehavior) root.style.setProperty('scroll-behavior', scrollBehavior);
-  else root.style.removeProperty('scroll-behavior');
+  for (let index = snapshots.length - 1; index >= 0; index -= 1) {
+    const { element, property, value } = snapshots[index];
+    if (value) element.style.setProperty(property, value);
+    else element.style.removeProperty(property);
+  }
+  snapshots = [];
 }
 
 /**
- * Freezes the page behind a modal and returns the reader to their exact place on close.
- * Reference counted, so handing over from one dialog to another (product -> bag) keeps
- * the page still instead of unlocking and relocking at a different offset.
+ * Freezes the page behind a modal without moving it, so the reader keeps their place and
+ * nothing can be displaced. Reference counted, so handing over from one dialog to another
+ * (product -> bag) never releases and re-applies in between.
  */
 export function useModalScrollLock(active: boolean) {
   useEffect(() => {

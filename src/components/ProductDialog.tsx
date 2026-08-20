@@ -1,5 +1,6 @@
 import { ChevronDown, Scissors, X } from 'lucide-react';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { copy, formatOmr, localize } from '../data/content';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { CustomFit, Locale, Product } from '../types';
@@ -121,7 +122,11 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
       ]
     : [];
 
-  return (
+  // Rendered into <body> rather than inside the app shell: a `transform`, `filter` or
+  // `contain` on any ancestor makes that ancestor the containing block for fixed-position
+  // descendants, which drops the sheet at the top of the document and leaves it scrolling
+  // with the page instead of pinned to the viewport.
+  return createPortal(
     <dialog
       ref={dialogRef}
       className="fixed inset-0 m-0 h-[100dvh] max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_24px_90px_rgba(28,20,23,0.35)] backdrop:bg-date/80 sm:m-auto sm:h-[min(92svh,920px)] sm:w-[min(94vw,1420px)]"
@@ -264,6 +269,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           </div>
         </>
       )}
-    </dialog>
+    </dialog>,
+    document.body,
   );
 }
