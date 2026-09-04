@@ -258,11 +258,16 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
             className="absolute inset-x-0 bottom-0 z-20 border-t border-copper/45 bg-pearl/95 px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-16px_40px_rgba(39,19,29,0.12)] backdrop-blur-md lg:hidden"
             dir={locale === 'ar' ? 'rtl' : 'ltr'}
           >
-            <p className={`mb-2 text-xs ${selectedSize ? 'text-shade' : 'text-copper-deep'}`}>
-              {selectedSize
-                ? `${localize(copy.product.size, locale)} · ${selectedSize}${customFitEnabled ? ` · ${localize(copy.product.customFit.title, locale)}` : ''}`
-                : localize(copy.product.chooseSize, locale)}
-            </p>
+            {/* The price sits four screens up once the reader is in the specifications, so it
+                travels with the button they are about to press. */}
+            <div className="mb-2 flex items-center justify-between gap-4">
+              <p className={`min-w-0 text-xs ${selectedSize ? 'text-shade' : 'text-copper-deep'}`}>
+                {selectedSize
+                  ? `${localize(copy.product.size, locale)} · ${selectedSize}${customFitEnabled ? ` · ${localize(copy.product.customFit.title, locale)}` : ''}`
+                  : localize(copy.product.chooseSize, locale)}
+              </p>
+              <p className="shrink-0 text-sm tabular-nums text-date">{formatOmr(product.priceOmr, locale)}</p>
+            </div>
             <button type="button" className="button-primary min-h-14 w-full px-6 py-3 shadow-button" onClick={handleAdd}>
               {localize(copy.product.add, locale)}
             </button>
