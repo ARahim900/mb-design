@@ -89,10 +89,14 @@ function App() {
       />
       <main id="main" tabIndex={-1}>
         <Hero locale={locale} />
-        <Collection locale={locale} onProductOpen={setSelectedProduct} />
-        <Craftsmanship locale={locale} />
-        <Story locale={locale} />
-        <Services locale={locale} />
+        {/* The hero is sticky at z-0. Everything after it scrolls over the top
+            on its own opaque layer — that overlap IS the transition. */}
+        <div className="relative z-10 bg-pearl">
+          <Collection locale={locale} onProductOpen={setSelectedProduct} />
+          <Craftsmanship locale={locale} />
+          <Story locale={locale} />
+          <Services locale={locale} />
+        </div>
       </main>
       <Footer locale={locale} />
 

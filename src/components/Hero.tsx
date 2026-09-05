@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { copy, localize } from '../data/content';
-import { useMagnetic, useParallax } from '../hooks/usePremiumMotion';
+import { useExitProgress, useMagnetic } from '../hooks/usePremiumMotion';
 import type { Locale } from '../types';
 
 interface HeroProps {
@@ -10,8 +10,8 @@ interface HeroProps {
 
 export function Hero({ locale }: HeroProps) {
   const DirectionArrow = locale === 'ar' ? ArrowLeft : ArrowRight;
-  const imageRef = useParallax<HTMLImageElement>(9);
   const ctaRef = useMagnetic<HTMLAnchorElement>();
+  const exit = useExitProgress();
 
   const title = localize(copy.hero.title, locale);
   // Split on whitespace ONLY. Arabic letters join to their neighbours, so
@@ -21,18 +21,44 @@ export function Hero({ locale }: HeroProps) {
   const words = title.split(' ');
 
   return (
-    <section id="top" className="relative min-h-svh overflow-hidden bg-date text-pearl sm:min-h-[820px] lg:h-svh lg:min-h-[720px]">
+    /**
+     * The hero is pinned behind the page rather than scrolling away with it:
+     * the collection climbs over it and floods the first piece's colour across
+     * the screen, so the two sections read as one move instead of two.
+     *
+     * `position: sticky` holds it there natively — nothing is hijacked, and
+     * because the containing block is <main> it releases on its own at the end.
+     *
+     * The parallax that used to sit on this image is gone: a pinned image has
+     * nothing to drift against, and it would have been a second writer on the
+     * same transform as the exit scale.
+     */
+    <section id="top" className="sticky top-0 z-0 h-svh overflow-hidden bg-date text-pearl sm:h-[820px] lg:h-svh lg:min-h-[720px]">
       <img
-        ref={imageRef}
         src="/assets/collection-v2/hero-plum.webp"
         alt={localize(copy.hero.imageAlt, locale)}
-        // 114% of the frame so the parallax travel never exposes an edge.
-        className="absolute inset-0 h-[114%] w-full object-cover object-[35%_center] sm:object-[42%_center] lg:object-center"
+        className="absolute inset-0 h-full w-full object-cover object-[35%_center] sm:object-[42%_center] lg:object-center"
+        // Recedes as it is covered, so the handover reads as the image pulling
+        // back rather than the page sliding over a static picture.
+        style={{
+          transform: `scale(${1 - exit * 0.08})`,
+          willChange: exit > 0 && exit < 1 ? 'transform' : 'auto',
+        }}
         decoding="async"
       />
       <div className="hero-wash absolute inset-0" aria-hidden="true" />
+      {/* Deepens as the collection climbs over it. Opacity only. */}
+      <div className="absolute inset-0 bg-date" style={{ opacity: exit * 0.55 }} aria-hidden="true" />
 
-      <div className="relative mx-auto grid min-h-svh max-w-[1600px] px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 sm:min-h-[820px] sm:px-8 sm:pb-16 sm:pt-36 lg:h-full lg:min-h-[720px] lg:grid-cols-2 lg:px-10 lg:pb-16 lg:pt-28 lg:[direction:ltr]">
+      <div
+        className="relative mx-auto grid h-full max-w-[1600px] px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 sm:px-8 sm:pb-16 sm:pt-36 lg:grid-cols-2 lg:px-10 lg:pb-16 lg:pt-28 lg:[direction:ltr]"
+        // The type leaves a little sooner than the image. That offset is what
+        // stops the handover feeling like one flat sheet moving.
+        style={{
+          opacity: Math.max(0, 1 - exit * 1.35),
+          transform: `translate3d(0, ${exit * -28}px, 0)`,
+        }}
+      >
         <div
           className="mt-auto w-full max-w-[350px] justify-self-end text-end sm:max-w-[430px] lg:col-start-2 lg:mb-10 lg:mt-0 lg:max-w-[560px] lg:self-center lg:justify-self-center"
           dir={locale === 'ar' ? 'rtl' : 'ltr'}

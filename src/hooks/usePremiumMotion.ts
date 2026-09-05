@@ -260,3 +260,44 @@ export function useActSequence<T extends HTMLElement>(count: number) {
 
   return { ref, act, progress };
 }
+
+/**
+ * How far the opening panel has been scrolled past, 0 to 1.
+ *
+ * Read from `scrollY` rather than the element's own rect, because the hero is
+ * pinned with `position: sticky` — once stuck its `top` is always 0 and the
+ * rect stops telling you anything about progress.
+ */
+export function useExitProgress(): number {
+  const [progress, setProgress] = useState(0);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (reduced) return;
+
+    let frame = 0;
+
+    const measure = () => {
+      frame = 0;
+      const span = window.innerHeight;
+      setProgress(Math.min(1, Math.max(0, window.scrollY / span)));
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [reduced]);
+
+  return progress;
+}

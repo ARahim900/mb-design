@@ -35,16 +35,18 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
   const active = products[act] ?? products[0];
 
   return (
-    <section id="collection" className="scroll-mt-8 bg-pearl">
+    <section id="collection" className="scroll-mt-8" style={{ backgroundColor: ground(products[0]) }}>
       <div className="mx-auto max-w-[1500px] px-4 py-20 sm:px-6 sm:py-28 lg:px-10 lg:py-36">
         <ScrollReveal>
           <div className="max-w-[46rem]" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-            <h2 className="display-heading text-[clamp(3.6rem,5vw,5.8rem)] leading-[1.05] text-date">
+            <h2 className="display-heading text-[clamp(3.6rem,5vw,5.8rem)] leading-[1.05] text-pearl">
               {localize(copy.collection.title, locale)}
             </h2>
-            <span className="my-6 block h-px w-14 bg-copper" aria-hidden="true" />
-            <p className="text-base leading-8 text-copper-deep">{localize(copy.collection.secondary, locale)}</p>
-            <p className="mt-5 max-w-[38rem] text-sm leading-7 text-shade">{localize(copy.collection.body, locale)}</p>
+            <span className="my-6 block h-px w-14 bg-pearl/45" aria-hidden="true" />
+            <p className="text-base leading-8 text-pearl">{localize(copy.collection.secondary, locale)}</p>
+            {/* pearl/75 is the floor here: 4.98:1 on jade. copper-deep, the
+                colour this carried on pearl, would have been 1.23:1. */}
+            <p className="mt-5 max-w-[38rem] text-sm leading-7 text-pearl/75">{localize(copy.collection.body, locale)}</p>
           </div>
         </ScrollReveal>
       </div>
@@ -153,6 +155,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
 
       {/* Always present, never inside the pinned stage: the sequence is a way
           of showing the collection, not the only way to reach it. */}
+      <div className="bg-pearl">
       <div className="mx-auto max-w-[1500px] px-4 pb-20 pt-14 sm:px-6 lg:px-10">
         <ul className="m-0 flex list-none flex-wrap gap-x-8 gap-y-3 p-0" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
           {products.map((product) => (
@@ -169,6 +172,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
             </li>
           ))}
         </ul>
+      </div>
       </div>
     </section>
   );

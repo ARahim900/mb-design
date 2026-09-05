@@ -8,7 +8,7 @@ interface FooterProps {
 
 export function Footer({ locale }: FooterProps) {
   return (
-    <footer className="bg-date px-4 py-14 text-pearl sm:px-6 lg:px-10 lg:py-20">
+    <footer className="relative z-10 bg-date px-4 py-14 text-pearl sm:px-6 lg:px-10 lg:py-20">
       <div className="mx-auto grid max-w-[1320px] gap-12 md:grid-cols-[1.1fr_0.9fr] md:gap-16">
         <div>
           <BrandWordmark tone="light" />
