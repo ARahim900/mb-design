@@ -15,6 +15,12 @@ export interface Product {
   readonly cut: LocalizedText;
   readonly signature: LocalizedText;
   readonly colorHex: string;
+  /**
+   * Full-bleed ground for the showcase. Defaults to `colorHex`; set it only
+   * where the swatch is too light to carry pearl text at AA. Shams is the one
+   * case — its saffron reaches just 3.62:1 against pearl.
+   */
+  readonly groundHex?: string;
   readonly sizes: readonly string[];
 }
 

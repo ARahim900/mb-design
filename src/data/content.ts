@@ -216,6 +216,7 @@ export const products: readonly Product[] = [
     cut: { ar: 'قصّة منسدلة بأكمام واسعة', en: 'Fluid cut with generous sleeves' },
     signature: { ar: 'بطانة رمانية وتطريز هندسي متناغم', en: 'Pomegranate lining with tonal geometric embroidery' },
     colorHex: '#C06F27',
+    groundHex: '#7E4412',   // 7.38:1 with pearl; the swatch itself is 3.62:1
     sizes: ['52', '54', '56', '58'],
   },
   {

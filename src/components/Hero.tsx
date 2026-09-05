@@ -51,7 +51,7 @@ export function Hero({ locale }: HeroProps) {
                   className="hero-word"
                   style={{ animationDelay: `${120 + index * 110}ms` }}
                 >
-                  {word}
+                  <span>{word}</span>
                 </span>
                 {/* A real text node, not a space inside the span: an
                     inline-block trims its own trailing whitespace, which runs

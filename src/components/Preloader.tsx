@@ -3,8 +3,8 @@ import { useReducedMotion } from '../hooks/usePremiumMotion';
 
 const SESSION_KEY = 'rizza:entered';
 /** Hard ceiling. The panel leaves on this schedule whether or not anything else finished. */
-const HOLD_MS = 900;
-const EXIT_MS = 900;
+const HOLD_MS = 1050;
+const EXIT_MS = 1000;
 
 /** sessionStorage throws outright in some privacy modes, so every touch is guarded. */
 function alreadyEntered(): boolean {
@@ -63,12 +63,14 @@ export function Preloader() {
   return (
     <div
       aria-hidden="true"
-      className={`preloader fixed inset-0 z-[60] grid place-items-center bg-date ${phase === 'out' ? 'preloader--out' : ''}`}
+      className={`preloader fixed inset-0 z-[60] ${phase === 'out' ? 'preloader--out' : ''}`}
     >
+      <div className="preloader__half preloader__half--top" />
+      <div className="preloader__half preloader__half--bottom" />
       <img
         src="/brand/rizza-primary-light.svg"
         alt=""
-        className="preloader__mark w-32 sm:w-40"
+        className="preloader__mark absolute left-1/2 top-1/2 w-32 -translate-x-1/2 -translate-y-1/2 sm:w-40"
         decoding="async"
       />
     </div>

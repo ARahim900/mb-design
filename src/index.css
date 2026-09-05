@@ -204,33 +204,72 @@ summary::-webkit-details-marker {
 /* Entry sequence. The panel leaves on a timer owned by <Preloader>, never on
    a load event, so it cannot strand the reader behind a slow asset. */
 .preloader {
-  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
 }
 
-.preloader--out {
-  transform: translate3d(0, -101%, 0);
+/* Two halves that part, rather than one panel that slides. Each is its own
+   transform, so the reveal is still two composited layers and nothing else. */
+.preloader__half {
+  position: absolute;
+  inset-inline: 0;
+  height: 50.5%;
+  background: #27131d;
+  transition: transform 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
 }
 
+.preloader__half--top { top: 0; }
+.preloader__half--bottom { bottom: 0; }
+
+.preloader--out .preloader__half--top { transform: translate3d(0, -100%, 0); }
+.preloader--out .preloader__half--bottom { transform: translate3d(0, 100%, 0); }
+
+.preloader--out .preloader__mark {
+  opacity: 0;
+  transform: translate3d(0, -12px, 0);
+  transition: opacity 420ms ease-out, transform 620ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* The mark is centred with a translate of its own, so the entrance animates
+   opacity only — a keyframe touching transform would cancel the centring. */
 .preloader__mark {
   opacity: 0;
-  transform: translate3d(0, 14px, 0);
-  animation: mark-settle 760ms cubic-bezier(0.22, 1, 0.36, 1) 80ms forwards;
-}
-
-@keyframes mark-settle {
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  animation: fade-in 760ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
 }
 
 /* Headline cascade. Word-level only — see the note in Hero.tsx about Arabic
    letter joining. inline-block is what lets each word carry a transform. */
+/* A mask reveal, not a fade: each word is clipped by its own box and rises
+   out from behind the edge. `clip-path` on the wrapper would cost a layer per
+   word, so the wrapper simply hides overflow and only the inner span moves. */
 .hero-word {
   display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Descenders and the Arabic shadda sit outside the em box, so the mask is
+     opened top and bottom and pulled back in with a negative margin. */
+  padding: 0.18em 0.06em 0.22em;
+  margin: -0.18em -0.06em -0.22em;
+}
+
+.hero-word > span {
+  display: inline-block;
+  transform: translate3d(0, 110%, 0);
+  animation: mask-rise 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: inherit;
+}
+
+@keyframes mask-rise {
+  to {
+    transform: none;
+  }
+}
+
+/* Each act's type rises as it comes forward. */
+.act-rise {
   opacity: 0;
-  transform: translate3d(0, 0.36em, 0);
-  animation: rise-in 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: translate3d(0, 18px, 0);
+  animation: rise-in 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Opacity only, and deliberately NOT `rise-in`. A filled animation outranks
@@ -298,6 +337,23 @@ summary::-webkit-details-marker {
   opacity: 1;
 }
 
+/* A pinned act is exactly one viewport tall, so on a short screen the panel
+   has to give something up rather than clip. The description is the piece
+   that goes — it is repeated in full in the product sheet. */
+@media (max-height: 730px) {
+  .act-stage .act-desc {
+    display: none;
+  }
+
+  .act-stage h3 {
+    font-size: clamp(2.6rem, 8vw, 4rem);
+  }
+
+  .act-stage figure span {
+    max-height: 40svh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -314,8 +370,9 @@ summary::-webkit-details-marker {
 
   /* The cascade must not leave anything invisible once its animation is
      reduced to nothing. */
-  .hero-word,
-  .hero-enter {
+  .hero-word > span,
+  .hero-enter,
+  .act-rise {
     opacity: 1;
     transform: none;
   }

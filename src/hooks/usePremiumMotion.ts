@@ -198,3 +198,65 @@ export function useMagnetic<T extends HTMLElement>(pull = 0.28): RefObject<T> {
 
   return ref;
 }
+
+/**
+ * Turns a tall section into a scroll-driven sequence of `count` acts.
+ *
+ * The section is pinned with `position: sticky` rather than by intercepting
+ * the wheel, so native scrolling — momentum, rubber-banding, a trackpad, a
+ * screen reader's own paging — all still drive it. Nothing is hijacked, which
+ * is what makes this safe on a phone.
+ *
+ * Returns the active act, and the progress within it for anything that wants
+ * to move continuously rather than in steps.
+ */
+export function useActSequence<T extends HTMLElement>(count: number) {
+  const ref = useRef<T>(null);
+  const [act, setAct] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || count <= 0) return;
+
+    let frame = 0;
+
+    const measure = () => {
+      frame = 0;
+      const rect = element.getBoundingClientRect();
+      // The pinned stage is one viewport tall, so the travel is the section
+      // height minus that viewport.
+      const travel = rect.height - window.innerHeight;
+      if (travel <= 0) {
+        setAct(0);
+        setProgress(0);
+        return;
+      }
+
+      const scrolled = Math.min(1, Math.max(0, -rect.top / travel));
+      const scaled = scrolled * count;
+      // The last act must not tip into a non-existent one at exactly 1.
+      const index = Math.min(count - 1, Math.floor(scaled));
+
+      setAct(index);
+      setProgress(scaled - index);
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [count]);
+
+  return { ref, act, progress };
+}
