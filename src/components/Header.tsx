@@ -1,6 +1,7 @@
 import { Menu, ShoppingBag, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { copy, localize } from '../data/content';
+import { useScrollDirection } from '../hooks/usePremiumMotion';
 import type { Locale } from '../types';
 import { BrandWordmark } from './BrandWordmark';
 
@@ -18,6 +19,8 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
   const navLabel = localize(copy.nav.label, locale);
   const bagLabel = localize(copy.header.bag, locale);
   const solid = scrolled || menuOpen;
+  // Never retract while the mobile menu is open — it hangs off the header.
+  const hidden = useScrollDirection(menuOpen);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 24);
@@ -42,7 +45,7 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 border-b pt-[env(safe-area-inset-top)] text-pearl transition-colors duration-300 motion-reduce:transition-none ${solid ? 'border-copper/50 bg-date/95 backdrop-blur-md' : 'border-copper/40 bg-date/5 backdrop-blur-[2px]'}`}
+      className={`fixed inset-x-0 top-0 z-40 border-b pt-[env(safe-area-inset-top)] text-pearl transition-[background-color,border-color,transform] duration-300 ease-quiet motion-reduce:transition-none ${solid ? 'border-copper/50 bg-date/95 backdrop-blur-md' : 'border-copper/40 bg-date/5 backdrop-blur-[2px]'} ${hidden ? '-translate-y-full' : 'translate-y-0'}`}
     >
       <a
         href="#main"
