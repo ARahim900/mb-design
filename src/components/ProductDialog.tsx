@@ -86,8 +86,9 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
     if (!lengthCm && !sleeveCm && customFit.fit === 'standard') {
       setCustomFitError(true);
       customFitRef.current?.querySelector('input')?.focus({ preventScroll: true });
-      // The alert renders on the next frame; centring it keeps it clear of the sticky order bar.
-      requestAnimationFrame(() => document.getElementById('custom-fit-error')?.scrollIntoView({ block: 'center' }));
+      // The alert renders on the next frame. Resting it just above the order bar leaves room
+      // above it for the field that now has focus, which a centred alert can push off the top.
+      requestAnimationFrame(() => document.getElementById('custom-fit-error')?.scrollIntoView({ block: 'end' }));
       return;
     }
 
@@ -139,14 +140,17 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
         <>
           <button
             type="button"
-            className="absolute end-4 top-[calc(1rem+env(safe-area-inset-top))] z-30 flex h-11 w-11 items-center justify-center border border-copper/70 bg-pearl/95 text-date shadow-[0_8px_24px_rgba(28,20,23,0.18)] backdrop-blur-sm transition-colors hover:bg-date hover:text-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper sm:end-5 sm:top-5"
+            className="absolute end-4 top-[calc(1rem+env(safe-area-inset-top))] z-30 flex h-11 w-11 items-center justify-center border border-copper/70 bg-pearl/95 text-date shadow-[0_8px_24px_rgba(28,20,23,0.18)] backdrop-blur-sm transition-colors hover:bg-date hover:text-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper sm:end-5 sm:top-5 short:right-auto short:left-5"
             onClick={onClose}
             aria-label={localize(copy.product.close, locale)}
           >
             <X aria-hidden="true" size={23} strokeWidth={1.25} />
           </button>
-          <div ref={scrollRegionRef} className="grid h-full overflow-y-auto overscroll-contain short:grid-cols-[2fr_3fr] short:overflow-hidden short:[direction:ltr] lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:[direction:ltr]">
-          <div className="relative h-[40svh] min-h-[280px] max-h-[430px] overflow-hidden bg-sand short:h-auto short:min-h-0 short:max-h-none lg:h-auto lg:min-h-0 lg:max-h-none">
+          {/* The scroll padding matches the sticky band at the top and the order bar at the
+              bottom, so a control that takes focus or is scrolled into view lands between them
+              rather than behind either. Sideways, the copy column scrolls and carries it instead. */}
+          <div ref={scrollRegionRef} className="grid h-full scroll-pt-[calc(env(safe-area-inset-top)+4.25rem)] scroll-pb-[calc(env(safe-area-inset-bottom)+7.5rem)] overflow-y-auto overscroll-contain sm:scroll-pt-[4.5rem] sm:scroll-pb-[7.5rem] short:grid-cols-[2fr_3fr] short:overflow-hidden short:scroll-p-0 short:[direction:ltr] lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:scroll-p-0 lg:[direction:ltr]">
+          <div className="relative z-20 h-[40svh] min-h-[280px] max-h-[430px] overflow-hidden bg-sand short:h-auto short:min-h-0 short:max-h-none lg:h-auto lg:min-h-0 lg:max-h-none">
             <img
               src={product.image}
               alt={localize(product.imageAlt, locale)}
@@ -157,10 +161,20 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           </div>
 
           <div
-            className="relative flex flex-col justify-start px-5 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-9 sm:px-10 sm:pt-12 short:min-h-full short:overflow-y-auto short:px-8 short:pt-8 lg:min-h-full lg:justify-center lg:overflow-y-auto lg:px-12 lg:py-16 xl:px-16"
+            className="relative flex flex-col justify-start px-5 pb-[calc(7.5rem+env(safe-area-inset-bottom))] sm:px-10 short:min-h-full short:scroll-pb-[calc(7.5rem+env(safe-area-inset-bottom))] short:overflow-y-auto short:px-8 short:pt-8 lg:min-h-full lg:overflow-y-auto lg:px-12 lg:py-16 xl:px-16"
             dir={locale === 'ar' ? 'rtl' : 'ltr'}
           >
-            <div className="mx-auto w-full max-w-lg">
+            {/* The column's top padding, made sticky so the copy scrolls under it rather than
+                under the close button. The pearl above it sits behind the photo, so it shows only
+                once the photo has scrolled away. On a phone held sideways the copy scrolls beside
+                the photo instead, and the close button moves onto the photo. */}
+            <div
+              aria-hidden="true"
+              className="sticky top-[calc(env(safe-area-inset-top)+2rem)] z-10 -mx-5 h-9 shrink-0 bg-pearl before:absolute before:inset-x-0 before:bottom-full before:h-[100dvh] before:bg-pearl sm:top-6 sm:-mx-10 sm:h-12 short:hidden lg:hidden"
+            />
+            {/* Auto margins centre the copy when it fits; justify-center would clip the top of a
+                column taller than the sheet, out of reach of scrolling. */}
+            <div className="mx-auto w-full max-w-lg lg:my-auto">
               <h2 className="font-display text-4xl font-normal leading-tight sm:text-6xl">{localize(product.name, locale)}</h2>
               <p className="mt-1 text-sm uppercase tracking-[0.1em] text-shade" lang={locale === 'ar' ? 'en' : 'ar'}>
                 {localize(product.name, locale === 'ar' ? 'en' : 'ar')}
@@ -169,7 +183,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
               <p className="text-lg tabular-nums">{formatOmr(product.priceOmr, locale)}</p>
               <p className="mt-4 max-w-md text-sm leading-7 text-shade sm:mt-5">{localize(product.description, locale)}</p>
 
-              <fieldset ref={sizeGroupRef} className="mt-7 scroll-mt-6 short:scroll-mb-28" aria-describedby={sizeError ? 'product-size-error' : undefined}>
+              <fieldset ref={sizeGroupRef} className="mt-7 scroll-mt-6" aria-describedby={sizeError ? 'product-size-error' : undefined}>
                 <legend className="mb-3 text-sm text-shade">{localize(copy.product.size, locale)}</legend>
                 <div className="grid grid-cols-4 gap-2">
                   {product.sizes.map((size) => (
@@ -213,7 +227,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
               </button>
 
               {customFitEnabled && (
-                <div ref={customFitRef} className="mt-3 scroll-mt-6 short:scroll-mb-28">
+                <div ref={customFitRef} className="mt-3 scroll-mt-6">
                   <CustomFitPanel
                     locale={locale}
                     value={customFit}

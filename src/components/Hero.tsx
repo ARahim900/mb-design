@@ -55,7 +55,7 @@ export function Hero({ locale }: HeroProps) {
       <div className="absolute inset-0 bg-date" style={{ opacity: exit * 0.55 }} aria-hidden="true" />
 
       <div
-        className="relative mx-auto grid h-full max-w-[1600px] px-safe pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 [--gutter:1.25rem] sm:pb-[calc(4rem+env(safe-area-inset-bottom))] sm:[--gutter:2rem] sm:max-lg:[@media(min-height:700px)]:pt-36 lg:grid-cols-2 lg:pb-16 lg:pt-28 lg:[--gutter:2.5rem] lg:[direction:ltr]"
+        className="relative mx-auto grid h-full max-w-[1600px] px-safe pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 [--gutter:1.25rem] sm:pb-[calc(4rem+env(safe-area-inset-bottom))] sm:[--gutter:2rem] sm:max-lg:[@media(min-height:700px)]:pt-36 short:pb-[calc(2rem+env(safe-area-inset-bottom))] short:pt-20 lg:grid-cols-2 lg:pb-16 lg:pt-28 lg:[--gutter:2.5rem] lg:[direction:ltr]"
         // The type leaves a little sooner than the image. That offset is what
         // stops the handover feeling like one flat sheet moving.
         style={{
