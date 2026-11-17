@@ -92,7 +92,10 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
       onClick={handleBackdropClick}
     >
       <div className="flex h-full flex-col">
-        <div className="flex min-h-[calc(70px+env(safe-area-inset-top))] shrink-0 items-center justify-between gap-2 border-b border-hair bg-pearl px-safe pt-[env(safe-area-inset-top)] [--gutter:1rem] sm:min-h-[76px] sm:pt-0 sm:[--gutter:1.75rem]">
+        {/* From `sm` the drawer is at most 500px wide and only its outer edge meets the screen
+            edge, so `sm:ps-[var(--gutter)]` keeps the notch inset off the inner edge. Padding
+            both edges for it narrowed the English empty-state title onto a second line. */}
+        <div className="flex min-h-[calc(70px+env(safe-area-inset-top))] shrink-0 items-center justify-between gap-2 border-b border-hair bg-pearl px-safe pt-[env(safe-area-inset-top)] [--gutter:1rem] sm:min-h-[76px] sm:ps-[var(--gutter)] sm:pt-0 sm:[--gutter:1.75rem]">
           <div className="flex min-w-0 items-center gap-2">
             {view === 'checkout' && (
               <button
@@ -120,17 +123,17 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
 
         {view === 'bag' && (
           <>
-            <div ref={scrollRegionRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-safe py-6 [--gutter:1rem] sm:py-7 sm:[--gutter:1.75rem]">
+            <div ref={scrollRegionRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-safe py-6 [--gutter:1rem] sm:py-7 sm:ps-[var(--gutter)] sm:[--gutter:1.75rem] short:pb-[max(1rem,env(safe-area-inset-bottom))] short:pt-3">
               {cart.length === 0 ? (
-                <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-2 text-center">
+                <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-2 text-center short:min-h-fit">
                   <span aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-full bg-sand text-copper-deep">
                     <ShoppingBag size={30} strokeWidth={1.1} />
                   </span>
-                  <p className="mt-6 font-display text-3xl text-date">{localize(copy.cart.empty, locale)}</p>
+                  <p className="mt-6 font-display text-3xl text-date short:mt-3">{localize(copy.cart.empty, locale)}</p>
                   <p className="mt-3 max-w-[17rem] text-sm leading-7 text-shade">{localize(copy.cart.emptyBody, locale)}</p>
                   <button
                     type="button"
-                    className="button-primary mt-8 min-h-12 w-full max-w-[17rem] px-6 py-3 shadow-button"
+                    className="button-primary mt-8 min-h-12 w-full max-w-[17rem] px-6 py-3 shadow-button short:mt-4"
                     onClick={handleBrowse}
                   >
                     {localize(copy.collection.all, locale)}
@@ -213,7 +216,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
             </div>
 
             {cart.length > 0 && (
-              <div className="shrink-0 border-t border-copper/55 bg-pearl px-safe pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] [--gutter:1rem] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-6 sm:[--gutter:1.75rem]">
+              <div className="shrink-0 border-t border-copper/55 bg-pearl px-safe pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] [--gutter:1rem] sm:ps-[var(--gutter)] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-6 sm:[--gutter:1.75rem]">
                 <div className="flex items-center justify-between text-sm">
                   <span>{localize(copy.cart.total, locale)}</span>
                   <span className="tabular-nums">{formatOmr(total, locale)}</span>
@@ -229,7 +232,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
 
         {view === 'checkout' && (
           <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleSubmit}>
-            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-safe py-6 [--gutter:1rem] sm:py-7 sm:[--gutter:1.75rem]">
+            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-safe py-6 [--gutter:1rem] sm:py-7 sm:ps-[var(--gutter)] sm:[--gutter:1.75rem]">
               <label className="form-field">
                 <span>{localize(copy.checkout.name, locale)}</span>
                 <input name="name" autoComplete="name" required />
@@ -248,7 +251,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
               </label>
               <p className="text-xs leading-relaxed text-shade">{localize(copy.cart.previewNote, locale)}</p>
             </div>
-            <div className="shrink-0 border-t border-copper/45 bg-pearl px-safe pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] [--gutter:1rem] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-6 sm:[--gutter:1.75rem]">
+            <div className="shrink-0 border-t border-copper/45 bg-pearl px-safe pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] [--gutter:1rem] sm:ps-[var(--gutter)] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-6 sm:[--gutter:1.75rem]">
               <button type="submit" className="button-primary min-h-14 w-full px-6 py-3 shadow-button">
                 {localize(copy.checkout.submit, locale)}
               </button>

@@ -110,6 +110,25 @@
     }
   }
 
+  /* A short word such as "الحرفة" is under 44px wide. The padding widens the tap target, the
+     matching negative margin keeps every word where it was, and the underline is inset by the
+     same amount so it still runs exactly under the text. */
+  .nav-link {
+    --nav-link-reach: 0.625rem;
+    margin-inline: calc(-1 * var(--nav-link-reach));
+    padding-inline: var(--nav-link-reach);
+  }
+
+  .nav-link::after {
+    inset-inline-start: var(--nav-link-reach);
+  }
+
+  @media (hover: hover) {
+    .nav-link:hover::after {
+      width: calc(100% - 2 * var(--nav-link-reach));
+    }
+  }
+
   .form-field {
     @apply block text-sm text-shade;
   }
