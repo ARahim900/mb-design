@@ -74,7 +74,7 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
         <a
           href="#top"
           className="justify-self-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper"
-          aria-label="RIZZA"
+          aria-label="MB Design"
         >
           <BrandWordmark tone="light" />
         </a>

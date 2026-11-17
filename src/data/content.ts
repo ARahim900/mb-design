@@ -47,8 +47,8 @@ export const copy = {
   story: {
     title: { ar: 'من عُمان، للعالم', en: 'From Oman, to the world' },
     body: {
-      ar: 'رزّة دار أزياء عمانية معاصرة. نعيد النظر في العباية كقطعة تعبّر عن المرأة، لا كزيّ يختصرها.',
-      en: 'RIZZA is a contemporary Omani fashion house. We see the abaya as an expression of the woman, never a definition of her.',
+      ar: 'MB Design دار أزياء عمانية معاصرة. نعيد النظر في العباية كقطعة تعبّر عن المرأة، لا كزيّ يختصرها.',
+      en: 'MB Design is a contemporary Omani fashion house. We see the abaya as an expression of the woman, never a definition of her.',
     },
     action: { ar: 'اقرئي قصّتنا', en: 'Read our story' },
     imageAlt: {

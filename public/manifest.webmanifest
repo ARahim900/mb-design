@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "RIZZA — رزّة",
-  "short_name": "RIZZA",
+  "name": "MB Design",
+  "short_name": "MB Design",
   "description": "دار أزياء عمانية معاصرة — A contemporary Omani fashion house.",
   "lang": "ar",
   "dir": "rtl",
@@ -13,19 +13,19 @@
   "categories": ["shopping", "lifestyle"],
   "icons": [
     {
-      "src": "/icons/rizza-app-192.png",
+      "src": "/icons/mb-design-app-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/rizza-app-512.png",
+      "src": "/icons/mb-design-app-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/rizza-app-512.png",
+      "src": "/icons/mb-design-app-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
