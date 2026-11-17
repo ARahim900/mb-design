@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CartDrawer } from './components/CartDrawer';
+import { CursorRing } from './components/CursorRing';
 import { Craftsmanship } from './components/Craftsmanship';
 import { Collection } from './components/Collection';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { Preloader } from './components/Preloader';
 import { ProductDialog } from './components/ProductDialog';
 import { Services } from './components/Services';
 import { Story } from './components/Story';
@@ -73,6 +75,12 @@ function App() {
 
   return (
     <div className="min-h-screen overflow-x-clip bg-pearl text-ink">
+      <Preloader />
+      <CursorRing />
+      {/* Photographic grain over the whole page. Inert to the pointer, and the
+          bag and product sheets are <dialog> elements in the top layer, so it
+          can never sit over them. */}
+      <div className="page-grain" aria-hidden="true" />
       <Header
         locale={locale}
         cartCount={cartCount}
@@ -81,10 +89,14 @@ function App() {
       />
       <main id="main" tabIndex={-1}>
         <Hero locale={locale} />
-        <Collection locale={locale} onProductOpen={setSelectedProduct} />
-        <Craftsmanship locale={locale} />
-        <Story locale={locale} />
-        <Services locale={locale} />
+        {/* The hero is sticky at z-0. Everything after it scrolls over the top
+            on its own opaque layer — that overlap IS the transition. */}
+        <div className="relative z-10 bg-pearl">
+          <Collection locale={locale} onProductOpen={setSelectedProduct} />
+          <Craftsmanship locale={locale} />
+          <Story locale={locale} />
+          <Services locale={locale} />
+        </div>
       </main>
       <Footer locale={locale} />
 
