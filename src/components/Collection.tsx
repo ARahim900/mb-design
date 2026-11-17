@@ -36,7 +36,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
 
   return (
     <section id="collection" className="scroll-mt-8" style={{ backgroundColor: ground(products[0]) }}>
-      <div className="mx-auto max-w-[1500px] px-4 py-20 sm:px-6 sm:py-28 lg:px-10 lg:py-36">
+      <div className="mx-auto max-w-[1500px] px-safe py-20 [--gutter:1rem] sm:py-28 sm:[--gutter:1.5rem] lg:py-36 lg:[--gutter:2.5rem]">
         <ScrollReveal>
           <div className="max-w-[46rem]" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
             <h2 className="display-heading text-[clamp(3.6rem,5vw,5.8rem)] leading-[1.05] text-pearl">
@@ -80,7 +80,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
                 came out — a 34% bright image over the ground lifts the backdrop
                 far enough that pearl text drops under AA on saffron. The pure
                 field is both safer and the stronger statement. */}
-            <div className="relative mx-auto grid w-full max-w-[1500px] gap-8 px-5 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
+            <div className="relative mx-auto grid w-full max-w-[1500px] gap-8 px-safe [--gutter:1.25rem] sm:[--gutter:2rem] lg:grid-cols-2 lg:items-center lg:gap-16 lg:[--gutter:2.5rem]">
               <figure className="order-2 m-0 lg:order-none">
                 <span className="relative block aspect-[4/5] max-h-[52svh] overflow-hidden lg:max-h-[70svh]">
                   {products.map((product, index) => (
@@ -156,7 +156,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
       {/* Always present, never inside the pinned stage: the sequence is a way
           of showing the collection, not the only way to reach it. */}
       <div className="bg-pearl">
-      <div className="mx-auto max-w-[1500px] px-4 pb-20 pt-14 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1500px] px-safe pb-20 pt-14 [--gutter:1rem] sm:[--gutter:1.5rem] lg:[--gutter:2.5rem]">
         <ul className="m-0 flex list-none flex-wrap gap-x-8 gap-y-3 p-0" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
           {products.map((product) => (
             <li key={product.id}>
@@ -190,7 +190,7 @@ interface PanelProps {
 function Panel({ product, index, locale, onOpen, DirectionArrow }: PanelProps) {
   return (
     <div style={{ backgroundColor: ground(product) }}>
-      <div className="mx-auto grid max-w-[1500px] gap-8 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
+      <div className="mx-auto grid max-w-[1500px] gap-8 px-safe py-16 [--gutter:1.25rem] sm:[--gutter:2rem] lg:grid-cols-2 lg:items-center lg:gap-16 lg:[--gutter:2.5rem]">
         <figure className="order-2 m-0 lg:order-none">
           <span className="relative block aspect-[4/5] overflow-hidden">
             <img

@@ -11,7 +11,7 @@ export function Story({ locale }: StoryProps) {
   const DirectionArrow = locale === 'ar' ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="story" className="content-auto scroll-mt-8 bg-sand lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:[direction:ltr]">
+    <section id="story" className="scroll-mt-8 bg-sand lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:[direction:ltr]">
       <ScrollReveal className="aspect-[4/3] overflow-hidden lg:aspect-auto lg:min-h-[650px]">
         <img
           src="/assets/collection-v2/story-cinnamon.webp"
@@ -21,7 +21,7 @@ export function Story({ locale }: StoryProps) {
           decoding="async"
         />
       </ScrollReveal>
-      <div className="flex items-center px-6 py-16 sm:px-10 sm:py-20 lg:px-14 lg:py-24 xl:px-20" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="flex items-center px-safe py-16 [--gutter:1.5rem] sm:py-20 sm:[--gutter:2.5rem] lg:py-24 lg:[--gutter:3.5rem] xl:[--gutter:5rem]" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
         <ScrollReveal className="mx-auto max-w-lg" delayMs={80}>
           <h2 className="display-heading text-[clamp(3.5rem,5vw,5.5rem)] leading-[1.2] text-date">
             {localize(copy.story.title, locale)}

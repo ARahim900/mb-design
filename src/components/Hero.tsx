@@ -32,8 +32,11 @@ export function Hero({ locale }: HeroProps) {
      * The parallax that used to sit on this image is gone: a pinned image has
      * nothing to drift against, and it would have been a second writer on the
      * same transform as the exit scale.
+     *
+     * A pinned panel taller than the screen never shows its lower part, so the
+     * tablet height is capped at the viewport rather than fixed at 820px.
      */
-    <section id="top" className="sticky top-0 z-0 h-svh overflow-hidden bg-date text-pearl sm:h-[820px] lg:h-svh lg:min-h-[720px]">
+    <section id="top" className="sticky top-0 z-0 h-svh overflow-hidden bg-date text-pearl sm:max-lg:h-[min(820px,100svh)] lg:h-svh lg:min-h-[720px]">
       <img
         src="/assets/collection-v2/hero-plum.webp"
         alt={localize(copy.hero.imageAlt, locale)}
@@ -51,7 +54,7 @@ export function Hero({ locale }: HeroProps) {
       <div className="absolute inset-0 bg-date" style={{ opacity: exit * 0.55 }} aria-hidden="true" />
 
       <div
-        className="relative mx-auto grid h-full max-w-[1600px] px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 sm:px-8 sm:pb-16 sm:pt-36 lg:grid-cols-2 lg:px-10 lg:pb-16 lg:pt-28 lg:[direction:ltr]"
+        className="relative mx-auto grid h-full max-w-[1600px] px-safe pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 [--gutter:1.25rem] sm:pb-[calc(4rem+env(safe-area-inset-bottom))] sm:[--gutter:2rem] sm:max-lg:[@media(min-height:700px)]:pt-36 lg:grid-cols-2 lg:pb-16 lg:pt-28 lg:[--gutter:2.5rem] lg:[direction:ltr]"
         // The type leaves a little sooner than the image. That offset is what
         // stops the handover feeling like one flat sheet moving.
         style={{
@@ -101,7 +104,7 @@ export function Hero({ locale }: HeroProps) {
 
         <a
           href="#collection"
-          className="absolute bottom-5 start-1/2 hidden h-11 w-11 -translate-x-1/2 items-center justify-center text-copper transition-colors hover:text-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper sm:flex"
+          className="absolute bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 hidden h-11 w-11 -translate-x-1/2 items-center justify-center text-copper transition-colors hover:text-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper sm:flex short:hidden"
           aria-label={localize(copy.hero.action, locale)}
         >
           <ArrowDown aria-hidden="true" size={22} strokeWidth={1.2} />

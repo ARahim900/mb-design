@@ -15,7 +15,7 @@ const icons = {
 
 export function Services({ locale }: ServicesProps) {
   return (
-    <section id="service" className="content-auto scroll-mt-8 border-y border-copper/55 bg-pearl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+    <section id="service" className="scroll-mt-8 border-y border-copper/55 bg-pearl px-safe py-12 [--gutter:1rem] sm:[--gutter:1.5rem] lg:py-16 lg:[--gutter:2.5rem]">
       <h2 className="sr-only">{localize(copy.nav.service, locale)}</h2>
       <div className="mx-auto grid max-w-[1320px] divide-y divide-copper/35 md:grid-cols-3 md:divide-x md:divide-y-0 rtl:md:divide-x-reverse">
         {copy.services.map((service, index) => {

@@ -19,6 +19,19 @@ interface MeasurementGuideProps {
   readonly kind: 'length' | 'sleeve' | 'fit';
 }
 
+// A text field rather than type="number": the iOS decimal pad follows the device region, so an
+// Arabic-region phone types Arabic-Indic digits and "٫" or ",", which a number input reports as
+// an empty value. Fold them back to ASCII digits and a single "." here instead.
+function normaliseDecimal(raw: string): string {
+  const ascii = raw
+    .replace(/[\u0660-\u0669]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+    .replace(/[\u06F0-\u06F9]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0))
+    .replace(/[\u066B,]/g, '.')
+    .replace(/[^0-9.]/g, '');
+  const [whole, ...fraction] = ascii.split('.');
+  return fraction.length > 0 ? `${whole}.${fraction.join('')}` : whole;
+}
+
 function MeasurementGuide({ kind }: MeasurementGuideProps) {
   return (
     <svg viewBox="0 0 76 100" className="h-24 w-[72px] text-date" aria-hidden="true">
@@ -73,12 +86,12 @@ export function CustomFitPanel({ locale, value, hasError, onChange }: CustomFitP
             <div className="mt-3 flex max-w-[180px] items-stretch border border-hair bg-pearl focus-within:border-copper-deep">
               <input
                 id={lengthId}
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.5"
+                autoComplete="off"
                 value={value.lengthCm}
-                onChange={(event) => onChange({ ...value, lengthCm: event.target.value })}
-                className="min-h-11 min-w-0 flex-1 appearance-none bg-transparent px-3 text-sm tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                onChange={(event) => onChange({ ...value, lengthCm: normaliseDecimal(event.target.value) })}
+                className="min-h-11 min-w-0 flex-1 appearance-none bg-transparent px-3 text-base tabular-nums lg:text-sm outline-none"
                 aria-describedby={`${lengthId}-help`}
               />
               <span id={`${lengthId}-help`} className="flex items-center border-s border-hair px-3 text-xs text-shade">
@@ -98,12 +111,12 @@ export function CustomFitPanel({ locale, value, hasError, onChange }: CustomFitP
             <div className="mt-3 flex max-w-[180px] items-stretch border border-hair bg-pearl focus-within:border-copper-deep">
               <input
                 id={sleeveId}
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.5"
+                autoComplete="off"
                 value={value.sleeveCm}
-                onChange={(event) => onChange({ ...value, sleeveCm: event.target.value })}
-                className="min-h-11 min-w-0 flex-1 appearance-none bg-transparent px-3 text-sm tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                onChange={(event) => onChange({ ...value, sleeveCm: normaliseDecimal(event.target.value) })}
+                className="min-h-11 min-w-0 flex-1 appearance-none bg-transparent px-3 text-base tabular-nums lg:text-sm outline-none"
                 aria-describedby={`${sleeveId}-help`}
               />
               <span id={`${sleeveId}-help`} className="flex items-center border-s border-hair px-3 text-xs text-shade">
@@ -141,7 +154,7 @@ export function CustomFitPanel({ locale, value, hasError, onChange }: CustomFitP
       </div>
 
       {hasError && (
-        <p className="mt-4 text-sm text-pomegranate" role="alert">
+        <p id="custom-fit-error" className="mt-4 text-sm text-pomegranate" role="alert">
           {localize(customCopy.addOne, locale)}
         </p>
       )}

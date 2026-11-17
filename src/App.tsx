@@ -21,7 +21,7 @@ function App() {
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
-    document.title = locale === 'ar' ? 'رزّة — RIZZA' : 'RIZZA — رزّة';
+    document.title = 'MB Design';
   }, [locale]);
 
   const cartCount = useMemo(

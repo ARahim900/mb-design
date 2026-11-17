@@ -1,7 +1,7 @@
-import { ArrowLeft, ArrowRight, Minus, Plus, Trash2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react';
 import { type FormEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { copy, formatOmr, localize } from '../data/content';
+import { copy, formatNumber, formatOmr, localize } from '../data/content';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { CartLine, Locale } from '../types';
 import { BrandWordmark } from './BrandWordmark';
@@ -69,6 +69,18 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
     if (event.target === dialogRef.current) onClose();
   };
 
+  const handleBrowse = () => {
+    onClose();
+    // Deferred by a frame: the drawer's scroll lock is released in an effect cleanup, and
+    // scrolling a document that is still locked does nothing at all.
+    requestAnimationFrame(() => {
+      document.getElementById('collection')?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+  };
+
   // Portalled into <body> for the same reason as the product sheet: no app-shell ancestor can
   // then become the containing block for this fixed-position drawer.
   return createPortal(
@@ -80,25 +92,25 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
       onClick={handleBackdropClick}
     >
       <div className="flex h-full flex-col">
-        <div className="flex min-h-[calc(70px+env(safe-area-inset-top))] shrink-0 items-center justify-between border-b border-hair bg-pearl px-4 pt-[env(safe-area-inset-top)] sm:min-h-[76px] sm:px-7 sm:pt-0">
-          <div className="flex items-center gap-2">
+        <div className="flex min-h-[calc(70px+env(safe-area-inset-top))] shrink-0 items-center justify-between gap-2 border-b border-hair bg-pearl px-safe pt-[env(safe-area-inset-top)] [--gutter:1rem] sm:min-h-[76px] sm:pt-0 sm:[--gutter:1.75rem]">
+          <div className="flex min-w-0 items-center gap-2">
             {view === 'checkout' && (
               <button
                 type="button"
-                className="flex h-11 w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
+                className="flex h-11 w-11 shrink-0 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
                 onClick={() => setView('bag')}
                 aria-label={localize(copy.cart.back, locale)}
               >
                 <BackArrow aria-hidden="true" size={21} strokeWidth={1.3} />
               </button>
             )}
-            <h2 id="cart-title" className="font-display text-3xl font-normal">
+            <h2 id="cart-title" className="min-w-0 py-2 font-display text-3xl font-normal lg:py-0">
               {view === 'bag' ? localize(copy.cart.title, locale) : localize(copy.checkout.title, locale)}
             </h2>
           </div>
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
+            className="flex h-11 w-11 shrink-0 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
             onClick={onClose}
             aria-label={localize(copy.cart.close, locale)}
           >
@@ -108,10 +120,21 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
 
         {view === 'bag' && (
           <>
-            <div ref={scrollRegionRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-7 sm:py-7">
+            <div ref={scrollRegionRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-safe py-6 [--gutter:1rem] sm:py-7 sm:[--gutter:1.75rem]">
               {cart.length === 0 ? (
-                <div className="flex h-full min-h-[300px] items-center justify-center text-center">
-                  <p className="font-display text-2xl text-shade">{localize(copy.cart.empty, locale)}</p>
+                <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-2 text-center">
+                  <span aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-full bg-sand text-copper-deep">
+                    <ShoppingBag size={30} strokeWidth={1.1} />
+                  </span>
+                  <p className="mt-6 font-display text-3xl text-date">{localize(copy.cart.empty, locale)}</p>
+                  <p className="mt-3 max-w-[17rem] text-sm leading-7 text-shade">{localize(copy.cart.emptyBody, locale)}</p>
+                  <button
+                    type="button"
+                    className="button-primary mt-8 min-h-12 w-full max-w-[17rem] px-6 py-3 shadow-button"
+                    onClick={handleBrowse}
+                  >
+                    {localize(copy.collection.all, locale)}
+                  </button>
                 </div>
               ) : (
                 <div className="divide-y divide-hair">
@@ -133,14 +156,24 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
                             <h3 className="font-display text-2xl">{localize(line.product.name, locale)}</h3>
                             <p className="mt-1 text-xs text-shade">{localize(copy.product.size, locale)}: {line.size}</p>
                             {line.customFit && (
-                              <div className="mt-2 border-s border-copper/70 ps-2 text-[11px] leading-5 text-shade">
+                              <div className="mt-2 border-s border-copper/70 ps-2 text-xs leading-5 text-shade lg:text-[11px]">
                                 <p className="font-medium text-copper-deep">
                                   {localize(copy.product.customFit.cartLabel, locale)}
                                 </p>
                                 <p>{getCustomFitSummary(line, locale)}</p>
                               </div>
                             )}
-                            <p className="mt-3 text-sm tabular-nums">{formatOmr(line.product.priceOmr, locale)}</p>
+                            {/* The line total, not the unit price: showing "OMR 165" against a
+                                quantity of three left the reader doing the sum themselves to
+                                understand the bag total underneath. */}
+                            <p className="mt-3 text-sm tabular-nums">
+                              {formatOmr(line.product.priceOmr * line.quantity, locale)}
+                            </p>
+                            {line.quantity > 1 && (
+                              <p className="mt-1 text-[12px] tabular-nums text-shade lg:text-[11px]">
+                                {formatNumber(line.quantity, locale)} × {formatOmr(line.product.priceOmr, locale)}
+                              </p>
+                            )}
                           </div>
                           <button
                             type="button"
@@ -160,7 +193,9 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
                           >
                             <Minus aria-hidden="true" size={15} />
                           </button>
-                          <span className="min-w-10 text-center text-sm tabular-nums" aria-live="polite">{line.quantity}</span>
+                          <span className="min-w-10 text-center text-sm tabular-nums" aria-live="polite">
+                            {formatNumber(line.quantity, locale)}
+                          </span>
                           <button
                             type="button"
                             className="flex h-11 w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"
@@ -178,7 +213,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
             </div>
 
             {cart.length > 0 && (
-              <div className="shrink-0 border-t border-copper/55 bg-pearl px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] sm:px-7 sm:py-6">
+              <div className="shrink-0 border-t border-copper/55 bg-pearl px-safe pb-[calc(1rem+env(safe-area-inset-bottom))] pt-5 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] [--gutter:1rem] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-6 sm:[--gutter:1.75rem]">
                 <div className="flex items-center justify-between text-sm">
                   <span>{localize(copy.cart.total, locale)}</span>
                   <span className="tabular-nums">{formatOmr(total, locale)}</span>
@@ -194,14 +229,14 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
 
         {view === 'checkout' && (
           <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleSubmit}>
-            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-6 sm:px-7 sm:py-7">
+            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-safe py-6 [--gutter:1rem] sm:py-7 sm:[--gutter:1.75rem]">
               <label className="form-field">
                 <span>{localize(copy.checkout.name, locale)}</span>
                 <input name="name" autoComplete="name" required />
               </label>
               <label className="form-field">
                 <span>{localize(copy.checkout.mobile, locale)}</span>
-                <input name="mobile" type="tel" inputMode="tel" autoComplete="tel" required />
+                <input name="mobile" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" className={locale === 'ar' ? 'text-right' : undefined} required />
               </label>
               <label className="form-field">
                 <span>{localize(copy.checkout.area, locale)}</span>
@@ -213,7 +248,7 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
               </label>
               <p className="text-xs leading-relaxed text-shade">{localize(copy.cart.previewNote, locale)}</p>
             </div>
-            <div className="shrink-0 border-t border-copper/45 bg-pearl px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] sm:px-7 sm:py-6">
+            <div className="shrink-0 border-t border-copper/45 bg-pearl px-safe pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 shadow-[0_-14px_36px_rgba(39,19,29,0.1)] [--gutter:1rem] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pt-6 sm:[--gutter:1.75rem]">
               <button type="submit" className="button-primary min-h-14 w-full px-6 py-3 shadow-button">
                 {localize(copy.checkout.submit, locale)}
               </button>
@@ -222,9 +257,13 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
         )}
 
         {view === 'confirmed' && (
-          <div className="flex flex-1 items-center px-8 py-14 text-center">
-            <div className="mx-auto max-w-sm">
-              <BrandWordmark />
+          <div className="flex min-h-0 flex-1 overflow-y-auto overscroll-contain px-safe py-14 text-center [--gutter:2rem] [@media(max-height:500px)]:py-8">
+            {/* Auto margins rather than `items-center`: they centre the block when it fits and
+                let it scroll from the top when it does not (landscape). */}
+            <div className="m-auto max-w-sm">
+              <div className="flex justify-center">
+                <BrandWordmark />
+              </div>
               <h3 className="mt-9 font-display text-4xl leading-tight">{localize(copy.checkout.confirmedTitle, locale)}</h3>
               <span className="mx-auto my-6 block h-px w-14 bg-copper" aria-hidden="true" />
               <p className="text-sm leading-relaxed text-shade">{localize(copy.checkout.confirmedBody, locale)}</p>
