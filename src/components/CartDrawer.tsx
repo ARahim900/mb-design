@@ -1,7 +1,7 @@
-import { ArrowLeft, ArrowRight, Minus, Plus, Trash2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react';
 import { type FormEvent, type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { copy, formatOmr, localize } from '../data/content';
+import { copy, formatNumber, formatOmr, localize } from '../data/content';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { CartLine, Locale } from '../types';
 import { BrandWordmark } from './BrandWordmark';
@@ -69,6 +69,18 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
     if (event.target === dialogRef.current) onClose();
   };
 
+  const handleBrowse = () => {
+    onClose();
+    // Deferred by a frame: the drawer's scroll lock is released in an effect cleanup, and
+    // scrolling a document that is still locked does nothing at all.
+    requestAnimationFrame(() => {
+      document.getElementById('collection')?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+  };
+
   // Portalled into <body> for the same reason as the product sheet: no app-shell ancestor can
   // then become the containing block for this fixed-position drawer.
   return createPortal(
@@ -110,8 +122,19 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
           <>
             <div ref={scrollRegionRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-7 sm:py-7">
               {cart.length === 0 ? (
-                <div className="flex h-full min-h-[300px] items-center justify-center text-center">
-                  <p className="font-display text-2xl text-shade">{localize(copy.cart.empty, locale)}</p>
+                <div className="flex h-full min-h-[300px] flex-col items-center justify-center px-2 text-center">
+                  <span aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-full bg-sand text-copper-deep">
+                    <ShoppingBag size={30} strokeWidth={1.1} />
+                  </span>
+                  <p className="mt-6 font-display text-3xl text-date">{localize(copy.cart.empty, locale)}</p>
+                  <p className="mt-3 max-w-[17rem] text-sm leading-7 text-shade">{localize(copy.cart.emptyBody, locale)}</p>
+                  <button
+                    type="button"
+                    className="button-primary mt-8 min-h-12 w-full max-w-[17rem] px-6 py-3 shadow-button"
+                    onClick={handleBrowse}
+                  >
+                    {localize(copy.collection.all, locale)}
+                  </button>
                 </div>
               ) : (
                 <div className="divide-y divide-hair">
@@ -140,7 +163,17 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
                                 <p>{getCustomFitSummary(line, locale)}</p>
                               </div>
                             )}
-                            <p className="mt-3 text-sm tabular-nums">{formatOmr(line.product.priceOmr, locale)}</p>
+                            {/* The line total, not the unit price: showing "OMR 165" against a
+                                quantity of three left the reader doing the sum themselves to
+                                understand the bag total underneath. */}
+                            <p className="mt-3 text-sm tabular-nums">
+                              {formatOmr(line.product.priceOmr * line.quantity, locale)}
+                            </p>
+                            {line.quantity > 1 && (
+                              <p className="mt-1 text-[11px] tabular-nums text-shade">
+                                {formatNumber(line.quantity, locale)} × {formatOmr(line.product.priceOmr, locale)}
+                              </p>
+                            )}
                           </div>
                           <button
                             type="button"
@@ -160,7 +193,9 @@ export function CartDrawer({ locale, open, cart, onClose, onQuantityChange }: Ca
                           >
                             <Minus aria-hidden="true" size={15} />
                           </button>
-                          <span className="min-w-10 text-center text-sm tabular-nums" aria-live="polite">{line.quantity}</span>
+                          <span className="min-w-10 text-center text-sm tabular-nums" aria-live="polite">
+                            {formatNumber(line.quantity, locale)}
+                          </span>
                           <button
                             type="button"
                             className="flex h-11 w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper"

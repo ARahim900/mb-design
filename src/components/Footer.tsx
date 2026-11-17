@@ -22,7 +22,7 @@ export function Footer({ locale }: FooterProps) {
         </nav>
       </div>
       <div className="mx-auto mt-14 flex max-w-[1320px] items-center justify-between border-t border-copper/35 pt-6 text-[11px] uppercase tracking-[0.08em] text-pearl/50">
-        <span>© 2026 RIZZA</span>
+        <span>© 2026 MB Design</span>
         <span>{localize(copy.footer.rights, locale)}</span>
       </div>
     </footer>

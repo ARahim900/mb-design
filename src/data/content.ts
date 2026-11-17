@@ -32,6 +32,7 @@ export const copy = {
     },
     productAction: { ar: 'تفاصيل القطعة', en: 'View details' },
     all: { ar: 'اكتشفي جميع القطع', en: 'Explore every piece' },
+    goTo: { ar: 'اذهبي إلى', en: 'Go to' },
   },
   craft: {
     title: { ar: 'تفاصيل تُرى وتُحس', en: 'Detail, seen and felt' },
@@ -47,8 +48,8 @@ export const copy = {
   story: {
     title: { ar: 'من عُمان، للعالم', en: 'From Oman, to the world' },
     body: {
-      ar: 'رزّة دار أزياء عمانية معاصرة. نعيد النظر في العباية كقطعة تعبّر عن المرأة، لا كزيّ يختصرها.',
-      en: 'RIZZA is a contemporary Omani fashion house. We see the abaya as an expression of the woman, never a definition of her.',
+      ar: 'MB Design دار أزياء عمانية معاصرة. نعيد النظر في العباية كقطعة تعبّر عن المرأة، لا كزيّ يختصرها.',
+      en: 'MB Design is a contemporary Omani fashion house. We see the abaya as an expression of the woman, never a definition of her.',
     },
     action: { ar: 'اقرئي قصّتنا', en: 'Read our story' },
     imageAlt: {
@@ -128,6 +129,10 @@ export const copy = {
     title: { ar: 'الحقيبة', en: 'Bag' },
     close: { ar: 'إغلاق الحقيبة', en: 'Close bag' },
     empty: { ar: 'حقيبتك هادئة الآن.', en: 'Your bag is quiet for now.' },
+    emptyBody: {
+      ar: 'تصفّحي المجموعة الأولى وأضيفي القطعة التي تناسبك.',
+      en: 'Browse the first collection and add the piece that suits you.',
+    },
     remove: { ar: 'إزالة', en: 'Remove' },
     decrease: { ar: 'تقليل الكمية', en: 'Decrease quantity' },
     increase: { ar: 'زيادة الكمية', en: 'Increase quantity' },
@@ -246,6 +251,14 @@ export const products: readonly Product[] = [
 
 export function localize(text: LocalizedText, locale: Locale): string {
   return text[locale];
+}
+
+/**
+ * Digits outside a price. Arabic uses Arabic-Indic numerals here for the same reason
+ * `formatOmr` does — a Latin "3" beside a price reading "١٦٥ ر.ع." reads as two languages.
+ */
+export function formatNumber(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(locale === 'ar' ? 'ar-OM' : 'en-OM').format(value);
 }
 
 export function formatOmr(value: number, locale: Locale): string {
