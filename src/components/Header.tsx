@@ -1,6 +1,7 @@
 import { Menu, ShoppingBag, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { copy, localize } from '../data/content';
+import { copy, formatNumber, localize } from '../data/content';
+import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { Locale } from '../types';
 import { BrandWordmark } from './BrandWordmark';
 
@@ -18,6 +19,10 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
   const navLabel = localize(copy.nav.label, locale);
   const bagLabel = localize(copy.header.bag, locale);
   const solid = scrolled || menuOpen;
+
+  // The panel covers the page, so the page behind it must not scroll — otherwise a swipe
+  // aimed at the menu drags the storefront underneath and the reader loses their place.
+  useModalScrollLock(menuOpen);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 24);
@@ -37,6 +42,18 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [menuOpen]);
+
+  // Rotating to a tablet width hides the panel through `md:hidden` but would leave its scroll
+  // lock applied, freezing the page. Close it with the breakpoint instead.
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 768px)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setMenuOpen(false);
+    };
+
+    desktop.addEventListener('change', handleChange);
+    return () => desktop.removeEventListener('change', handleChange);
+  }, []);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -98,7 +115,7 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
             <ShoppingBag aria-hidden="true" size={23} strokeWidth={1.3} />
             {cartCount > 0 && (
               <span aria-hidden="true" className="absolute end-0 top-0 flex h-5 min-w-5 items-center justify-center bg-copper px-1 text-[10px] leading-none text-date">
-                {cartCount}
+                {formatNumber(cartCount, locale)}
               </span>
             )}
           </button>
@@ -106,26 +123,36 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
       </div>
 
       {menuOpen && (
-        <nav
-          id="mobile-navigation"
-          className="absolute inset-x-0 top-full max-h-[calc(100svh-76px)] overflow-y-auto border-y border-copper/60 bg-date px-5 py-3 shadow-[0_22px_50px_rgba(28,20,23,0.45)] md:hidden"
-          aria-label={navLabel}
-        >
-          <div className="flex flex-col divide-y divide-copper/30 text-xl font-medium">
-            <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#collection" onClick={closeMenu}>
-              <span>{localize(copy.nav.collection, locale)}</span>
-              <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">01</span>
-            </a>
-            <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#craft" onClick={closeMenu}>
-              <span>{localize(copy.nav.craft, locale)}</span>
-              <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">02</span>
-            </a>
-            <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#story" onClick={closeMenu}>
-              <span>{localize(copy.nav.about, locale)}</span>
-              <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">03</span>
-            </a>
-          </div>
-        </nav>
+        <>
+          {/* Absolute, not fixed: the header is already the fixed element, so `top-full` anchors
+              the scrim to the bottom of the bar. A fixed child would resolve `top-full` against
+              the viewport and land off-screen. Painted before the nav, so the nav sits above it. */}
+          <div
+            className="absolute inset-x-0 top-full h-[100dvh] bg-date/55 backdrop-blur-[2px] md:hidden"
+            aria-hidden="true"
+            onClick={closeMenu}
+          />
+          <nav
+            id="mobile-navigation"
+            className="absolute inset-x-0 top-full max-h-[calc(100svh-76px)] overflow-y-auto border-y border-copper/60 bg-date px-5 py-3 shadow-[0_22px_50px_rgba(28,20,23,0.45)] md:hidden"
+            aria-label={navLabel}
+          >
+            <div className="flex flex-col divide-y divide-copper/30 text-xl font-medium">
+              <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#collection" onClick={closeMenu}>
+                <span>{localize(copy.nav.collection, locale)}</span>
+                <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">01</span>
+              </a>
+              <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#craft" onClick={closeMenu}>
+                <span>{localize(copy.nav.craft, locale)}</span>
+                <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">02</span>
+              </a>
+              <a className="flex min-h-16 items-center justify-between gap-5 py-4 text-pearl transition-colors hover:text-copper focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper" href="#story" onClick={closeMenu}>
+                <span>{localize(copy.nav.about, locale)}</span>
+                <span aria-hidden="true" className="text-[10px] tracking-editorial text-copper">03</span>
+              </a>
+            </div>
+          </nav>
+        </>
       )}
     </header>
   );
