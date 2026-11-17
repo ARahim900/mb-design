@@ -85,8 +85,9 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
     const sleeveCm = customFit.sleeveCm.trim();
     if (!lengthCm && !sleeveCm && customFit.fit === 'standard') {
       setCustomFitError(true);
-      customFitRef.current?.scrollIntoView({ block: 'center' });
-      customFitRef.current?.querySelector('input')?.focus();
+      customFitRef.current?.querySelector('input')?.focus({ preventScroll: true });
+      // The alert renders on the next frame; centring it keeps it clear of the sticky order bar.
+      requestAnimationFrame(() => document.getElementById('custom-fit-error')?.scrollIntoView({ block: 'center' }));
       return;
     }
 
@@ -129,7 +130,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
   return createPortal(
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_24px_90px_rgba(28,20,23,0.35)] backdrop:bg-date/80 sm:m-auto sm:h-[min(92svh,920px)] sm:w-[min(94vw,1420px)]"
+      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-full max-w-none overflow-hidden bg-pearl p-0 text-ink shadow-[0_24px_90px_rgba(28,20,23,0.35)] backdrop:bg-date/80 sm:m-auto sm:h-[min(92svh,920px)] sm:w-[min(94vw,1420px,calc(100vw-2*max(env(safe-area-inset-left),env(safe-area-inset-right))-16px))]"
       aria-label={product ? localize(product.name, locale) : undefined}
       onClose={onClose}
       onClick={handleBackdropClick}
@@ -144,8 +145,8 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           >
             <X aria-hidden="true" size={23} strokeWidth={1.25} />
           </button>
-          <div ref={scrollRegionRef} className="grid h-full overflow-y-auto overscroll-contain lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:[direction:ltr]">
-          <div className="relative h-[40svh] min-h-[280px] max-h-[430px] overflow-hidden bg-sand lg:h-auto lg:min-h-0 lg:max-h-none">
+          <div ref={scrollRegionRef} className="grid h-full overflow-y-auto overscroll-contain short:grid-cols-[2fr_3fr] short:overflow-hidden short:[direction:ltr] lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:[direction:ltr]">
+          <div className="relative h-[40svh] min-h-[280px] max-h-[430px] overflow-hidden bg-sand short:h-auto short:min-h-0 short:max-h-none lg:h-auto lg:min-h-0 lg:max-h-none">
             <img
               src={product.image}
               alt={localize(product.imageAlt, locale)}
@@ -156,7 +157,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           </div>
 
           <div
-            className="relative flex flex-col justify-start px-5 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-9 sm:px-10 sm:pt-12 lg:min-h-full lg:justify-center lg:overflow-y-auto lg:px-12 lg:py-16 xl:px-16"
+            className="relative flex flex-col justify-start px-5 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-9 sm:px-10 sm:pt-12 short:min-h-full short:overflow-y-auto short:px-8 short:pt-8 lg:min-h-full lg:justify-center lg:overflow-y-auto lg:px-12 lg:py-16 xl:px-16"
             dir={locale === 'ar' ? 'rtl' : 'ltr'}
           >
             <div className="mx-auto w-full max-w-lg">
@@ -168,7 +169,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
               <p className="text-lg tabular-nums">{formatOmr(product.priceOmr, locale)}</p>
               <p className="mt-4 max-w-md text-sm leading-7 text-shade sm:mt-5">{localize(product.description, locale)}</p>
 
-              <fieldset ref={sizeGroupRef} className="mt-7 scroll-mt-6" aria-describedby={sizeError ? 'product-size-error' : undefined}>
+              <fieldset ref={sizeGroupRef} className="mt-7 scroll-mt-6 short:scroll-mb-28" aria-describedby={sizeError ? 'product-size-error' : undefined}>
                 <legend className="mb-3 text-sm text-shade">{localize(copy.product.size, locale)}</legend>
                 <div className="grid grid-cols-4 gap-2">
                   {product.sizes.map((size) => (
@@ -212,7 +213,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
               </button>
 
               {customFitEnabled && (
-                <div ref={customFitRef} className="mt-3 scroll-mt-6">
+                <div ref={customFitRef} className="mt-3 scroll-mt-6 short:scroll-mb-28">
                   <CustomFitPanel
                     locale={locale}
                     value={customFit}
@@ -235,7 +236,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
                       key={specification.label}
                       className={`min-w-0 py-3 ${index % 2 === 0 ? 'pe-3' : 'border-s border-copper/30 ps-3'} ${index > 1 ? 'border-t border-copper/30' : ''}`}
                     >
-                      <dt className="text-[11px] leading-5 text-shade">{specification.label}</dt>
+                      <dt className="text-xs leading-5 text-shade lg:text-[11px]">{specification.label}</dt>
                       <dd className="mt-1 text-sm leading-6 text-date">{specification.value}</dd>
                     </div>
                   ))}
@@ -255,7 +256,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           </div>
           </div>
           <div
-            className="absolute inset-x-0 bottom-0 z-20 border-t border-copper/45 bg-pearl/95 px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-16px_40px_rgba(39,19,29,0.12)] backdrop-blur-md lg:hidden"
+            className="absolute inset-x-0 bottom-0 z-20 border-t border-copper/45 bg-pearl/95 px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-16px_40px_rgba(39,19,29,0.12)] backdrop-blur-md sm:pb-[0.9rem] short:left-[40%] lg:hidden"
             dir={locale === 'ar' ? 'rtl' : 'ltr'}
           >
             {/* The price sits four screens up once the reader is in the specifications, so it

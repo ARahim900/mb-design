@@ -11,8 +11,8 @@ export function Craftsmanship({ locale }: CraftsmanshipProps) {
   const DirectionArrow = locale === 'ar' ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="craft" className="content-auto scroll-mt-8 bg-jade text-pearl lg:grid lg:grid-cols-[0.75fr_1.25fr] lg:[direction:ltr]">
-      <div className="flex items-center px-6 py-16 sm:px-10 sm:py-20 lg:px-14 lg:py-24 xl:px-20" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <section id="craft" className="scroll-mt-8 bg-jade text-pearl lg:grid lg:grid-cols-[0.75fr_1.25fr] lg:[direction:ltr]">
+      <div className="flex items-center px-safe py-16 [--gutter:1.5rem] sm:py-20 sm:[--gutter:2.5rem] lg:py-24 lg:[--gutter:3.5rem] xl:[--gutter:5rem]" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
         <ScrollReveal className="mx-auto max-w-lg lg:mx-0">
           <h2 className="display-heading max-w-md text-[clamp(3.5rem,5vw,5.5rem)] leading-[1.2]">
             {localize(copy.craft.title, locale)}

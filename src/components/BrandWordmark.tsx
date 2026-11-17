@@ -9,6 +9,6 @@ export function BrandWordmark({ tone = 'dark', compact = false }: BrandWordmarkP
   const sizeClass = compact ? 'w-[4.5rem]' : 'w-[5.25rem] sm:w-[5.75rem] lg:w-[7rem]';
 
   return (
-    <img src={source} alt="MB Design" className={`block h-auto ${sizeClass}`} />
+    <img src={source} alt="MB Design" width={597} height={445} className={`block h-auto ${sizeClass}`} />
   );
 }

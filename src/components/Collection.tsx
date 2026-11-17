@@ -52,7 +52,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
   };
 
   return (
-    <section id="collection" className="content-auto scroll-mt-8 bg-pearl px-4 py-20 sm:px-6 sm:py-28 lg:px-10 lg:py-36">
+    <section id="collection" className="scroll-mt-8 bg-pearl px-safe py-20 [--gutter:1rem] sm:py-28 sm:[--gutter:1.5rem] lg:py-36 lg:[--gutter:2.5rem]">
       <div className="mx-auto max-w-[1500px] lg:grid lg:grid-cols-[270px_1fr] lg:gap-14 lg:[direction:ltr] xl:grid-cols-[330px_1fr] xl:gap-20">
         <ScrollReveal className="mb-12 self-center lg:mb-0 lg:pb-16">
           <div dir={locale === 'ar' ? 'rtl' : 'ltr'}>
@@ -69,19 +69,21 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
           </div>
         </ScrollReveal>
 
-        <div ref={railRef} id="collection-grid" className="collection-rail -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-8 sm:-mx-6 sm:gap-5 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0 lg:[direction:ltr]">
+        <div ref={railRef} id="collection-grid" className="collection-rail rail-bleed flex snap-x snap-mandatory gap-4 overflow-x-auto pb-8 sm:gap-5 lg:mx-0 lg:scroll-px-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0 lg:[direction:ltr]">
           {products.map((product, index) => (
-            <ScrollReveal key={product.id} delayMs={index * 80} className="w-[84vw] max-w-[390px] shrink-0 snap-start lg:w-auto lg:max-w-none">
+            <ScrollReveal key={product.id} delayMs={index * 80} className="w-[84vw] max-w-[390px] shrink-0 snap-start short:w-[min(30rem,calc(100vw-8rem))] short:max-w-none lg:w-auto lg:max-w-none">
             <article className="h-full">
               <button
                 type="button"
-                className="shadow-card group block h-full w-full bg-pearl text-start transition duration-500 ease-quiet hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper motion-reduce:transition-none"
+                className="shadow-card group block h-full w-full bg-pearl short:flex text-start transition duration-500 ease-quiet hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper motion-reduce:transition-none"
                 dir={locale === 'ar' ? 'rtl' : 'ltr'}
                 onClick={() => onProductOpen(product)}
                 aria-labelledby={`${product.id}-name ${product.id}-price`}
                 aria-describedby={`${product.id}-description`}
               >
-                <span className="relative block aspect-[4/5] overflow-hidden bg-sand">
+                {/* On a phone on its side a stacked card is taller than the screen, so the image moves
+                    beside the text at the same 4:5 crop and the whole card fits in one view. */}
+                <span className="relative block aspect-[4/5] overflow-hidden bg-sand short:w-40 short:shrink-0 short:self-start">
                   <img
                     src={product.image}
                     alt={localize(product.imageAlt, locale)}
@@ -92,7 +94,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
                   />
                   <span className="absolute bottom-0 start-0 h-1 w-20 transition-all duration-500 group-hover:w-full" style={{ backgroundColor: product.colorHex }} aria-hidden="true" />
                 </span>
-                <span className="block border-b border-hair py-5">
+                <span className="block border-b border-hair py-5 short:min-w-0 short:flex-1 short:py-4 short:ps-5">
                   <span className="flex items-start justify-between gap-5">
                     <span>
                       <span id={`${product.id}-name`} className="block font-display text-3xl leading-tight text-date">{localize(product.name, locale)}</span>
@@ -118,7 +120,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
             These mark the position and jump between pieces; `lg:hidden` keeps them out of the
             desktop grid entirely, so they never take a cell. */}
         <div
-          className="-mt-2 flex items-center justify-center gap-1 lg:hidden"
+          className="-mt-2 flex items-center justify-center lg:hidden"
           role="group"
           aria-label={localize(copy.collection.title, locale)}
         >
@@ -126,7 +128,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
             <button
               key={product.id}
               type="button"
-              className="flex h-11 w-8 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper"
+              className="flex h-11 w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper"
               aria-label={`${localize(copy.collection.goTo, locale)} ${localize(product.name, locale)}`}
               aria-current={index === activeIndex || undefined}
               onClick={() => scrollToProduct(index)}

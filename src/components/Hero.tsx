@@ -10,7 +10,7 @@ export function Hero({ locale }: HeroProps) {
   const DirectionArrow = locale === 'ar' ? ArrowLeft : ArrowRight;
 
   return (
-    <section id="top" className="relative min-h-svh overflow-hidden bg-date text-pearl sm:min-h-[820px] lg:h-svh lg:min-h-[720px]">
+    <section id="top" className="relative min-h-svh overflow-hidden bg-date text-pearl sm:max-lg:[@media(min-height:700px)]:min-h-[820px] lg:h-svh lg:min-h-[720px]">
       <img
         src="/assets/collection-v2/hero-plum.webp"
         alt={localize(copy.hero.imageAlt, locale)}
@@ -19,7 +19,7 @@ export function Hero({ locale }: HeroProps) {
       />
       <div className="hero-wash absolute inset-0" aria-hidden="true" />
 
-      <div className="relative mx-auto grid min-h-svh max-w-[1600px] px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 sm:min-h-[820px] sm:px-8 sm:pb-16 sm:pt-36 lg:h-full lg:min-h-[720px] lg:grid-cols-2 lg:px-10 lg:pb-16 lg:pt-28 lg:[direction:ltr]">
+      <div className="relative mx-auto grid min-h-svh max-w-[1600px] px-safe pb-[calc(2rem+env(safe-area-inset-bottom))] pt-28 [--gutter:1.25rem] sm:pb-[calc(4rem+env(safe-area-inset-bottom))] sm:[--gutter:2rem] sm:max-lg:[@media(min-height:700px)]:min-h-[820px] sm:max-lg:[@media(min-height:700px)]:pt-36 lg:h-full lg:min-h-[720px] lg:grid-cols-2 lg:pb-16 lg:pt-28 lg:[--gutter:2.5rem] lg:[direction:ltr]">
         <div
           className="mt-auto w-full max-w-[350px] justify-self-end text-end sm:max-w-[430px] lg:col-start-2 lg:mb-10 lg:mt-0 lg:max-w-[560px] lg:self-center lg:justify-self-center"
           dir={locale === 'ar' ? 'rtl' : 'ltr'}
@@ -36,7 +36,7 @@ export function Hero({ locale }: HeroProps) {
 
         <a
           href="#collection"
-          className="absolute bottom-5 start-1/2 hidden h-11 w-11 -translate-x-1/2 items-center justify-center text-copper transition-colors hover:text-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper sm:flex"
+          className="absolute bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 hidden h-11 w-11 -translate-x-1/2 items-center justify-center text-copper transition-colors hover:text-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-copper sm:flex short:hidden"
           aria-label={localize(copy.hero.action, locale)}
         >
           <ArrowDown aria-hidden="true" size={22} strokeWidth={1.2} />

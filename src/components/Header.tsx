@@ -68,7 +68,7 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
         {localize(copy.header.skip, locale)}
       </a>
 
-      <div className="mx-auto grid h-[76px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-3 sm:h-[82px] sm:px-6 lg:h-[98px] lg:px-10">
+      <div className="mx-auto grid h-[76px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-safe [--gutter:0.75rem] sm:h-[82px] sm:[--gutter:1.5rem] lg:h-[98px] lg:[--gutter:2.5rem]">
         <div className="flex items-center justify-self-start">
           <button
             type="button"
@@ -114,7 +114,7 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
           >
             <ShoppingBag aria-hidden="true" size={23} strokeWidth={1.3} />
             {cartCount > 0 && (
-              <span aria-hidden="true" className="absolute end-0 top-0 flex h-5 min-w-5 items-center justify-center bg-copper px-1 text-[10px] leading-none text-date">
+              <span aria-hidden="true" className="absolute end-0 top-0 flex h-5 min-w-5 items-center justify-center bg-copper px-1 text-xs leading-none text-date lg:text-[10px]">
                 {formatNumber(cartCount, locale)}
               </span>
             )}
@@ -128,13 +128,13 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
               the scrim to the bottom of the bar. A fixed child would resolve `top-full` against
               the viewport and land off-screen. Painted before the nav, so the nav sits above it. */}
           <div
-            className="absolute inset-x-0 top-full h-[100dvh] bg-date/55 backdrop-blur-[2px] md:hidden"
+            className="absolute inset-x-0 top-full h-[100dvh] touch-none bg-date/55 backdrop-blur-[2px] md:hidden"
             aria-hidden="true"
             onClick={closeMenu}
           />
           <nav
             id="mobile-navigation"
-            className="absolute inset-x-0 top-full max-h-[calc(100svh-76px)] overflow-y-auto border-y border-copper/60 bg-date px-5 py-3 shadow-[0_22px_50px_rgba(28,20,23,0.45)] md:hidden"
+            className="absolute inset-x-0 top-full max-h-[calc(100svh-76px-env(safe-area-inset-top))] overflow-y-auto overscroll-contain border-y border-copper/60 bg-date px-safe py-3 shadow-[0_22px_50px_rgba(28,20,23,0.45)] [--gutter:1.25rem] md:hidden"
             aria-label={navLabel}
           >
             <div className="flex flex-col divide-y divide-copper/30 text-xl font-medium">
