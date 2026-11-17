@@ -35,8 +35,9 @@ export function Hero({ locale }: HeroProps) {
      *
      * A pinned panel taller than the screen never shows its lower part, so the
      * tablet height is capped at the viewport rather than fixed at 820px.
+     * Under reduced motion it is not pinned at all and simply scrolls away.
      */
-    <section id="top" className="sticky top-0 z-0 h-svh overflow-hidden bg-date text-pearl sm:max-lg:h-[min(820px,100svh)] lg:h-svh lg:min-h-[720px]">
+    <section id="top" className="sticky top-0 z-0 h-svh overflow-hidden bg-date text-pearl motion-reduce:relative sm:max-lg:h-[min(820px,100svh)] lg:h-svh lg:min-h-[720px]">
       <img
         src="/assets/collection-v2/hero-plum.webp"
         alt={localize(copy.hero.imageAlt, locale)}

@@ -1,7 +1,7 @@
-# RIZZA · رزّة
+# MB Design
 
-Bilingual storefront for RIZZA, an Omani abaya label. Arabic-first, right-to-left
-by default, with English as the alternate.
+Bilingual storefront for MB Design, an Omani abaya label. Arabic-first,
+right-to-left by default, with English as the alternate.
 
 ```bash
 npm install
@@ -86,8 +86,9 @@ Three rules hold across all of it:
    trigger layout. `will-change` is set when an element starts moving and
    released when it stops.
 2. **`prefers-reduced-motion` disables it entirely** — the entry sequence, the
-   pinned sequence, parallax, the cursor and the grain all switch off, and the
-   collection falls back to a plain stack of the same panels.
+   pinned sequence, parallax, the cursor and the grain all switch off, the hero
+   is no longer pinned, and the collection falls back to a plain stack of the
+   same panels.
 3. **Nothing hijacks scrolling.** Pinning is `position: sticky`, so momentum,
    rubber-banding, keyboard paging and assistive tech all still drive the page.
 
@@ -95,7 +96,7 @@ Three rules hold across all of it:
 
 | Hook | Does |
 |---|---|
-| `useReducedMotion` / `useFinePointer` | media queries as state; both return `false` until proven, so the plain experience is the default |
+| `useReducedMotion` / `useFinePointer` | media queries as state, read on the first render, so a reduced-motion reader never sees one frame of motion and a phone never mounts the cursor |
 | `useScrollDirection(locked)` | header retracts going down, returns going up; `locked` pins it open |
 | `useActSequence(count)` | turns a tall section into `count` scroll-driven acts |
 | `useExitProgress()` | how far the pinned hero has been scrolled past, 0–1 |
@@ -126,7 +127,13 @@ behind it. The footer carries `relative z-10` for the same reason.
   element. The hero CTA's entry is opacity-only for exactly this reason.
 - **A pinned act is one viewport tall.** Under `730px` of height the panel drops
   its description rather than clipping; the text is repeated in the product
-  sheet regardless.
+  sheet regardless. Below the desktop grid the photograph takes whatever height
+  the type leaves, the stage is padded clear of the notch, the home indicator
+  and (in portrait) the header, and a phone on its side (`short:`) puts the
+  photograph beside the type.
+- **The entry panel never holds the page.** It takes no pointer events, parts on
+  the first tap, key, wheel or touch, centres the lockup inside the safe area,
+  and remembers the tab in `sessionStorage` under `mb-design:entered`.
 - **`useModalScrollLock` is reference counted** and deliberately does not move
   the document — read the comment in it before changing anything about how
   dialogs freeze the page. Smooth-scroll libraries were considered and rejected

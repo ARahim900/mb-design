@@ -4,12 +4,13 @@ const FINE_POINTER = '(hover: hover) and (pointer: fine)';
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
 /**
- * Tracks a media query and re-renders when it flips. Returns false during the
- * first render on the server or before the effect runs, so every caller must
- * treat "false" as "not yet proven true" and degrade to the plain experience.
+ * Tracks a media query and re-renders when it flips. Read on the first render,
+ * not after it: this app only ever renders in the browser, and starting from
+ * "false" would give a reader who asked for less motion one frame of the entry
+ * panel and the pinned sequence before they were withdrawn.
  */
 function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
 
   useEffect(() => {
     const list = window.matchMedia(query);

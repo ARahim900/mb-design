@@ -260,8 +260,9 @@ summary::-webkit-details-marker {
   transition: opacity 420ms ease-out, transform 620ms cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-/* The mark is centred with a translate of its own, so the entrance animates
-   opacity only — a keyframe touching transform would cancel the centring. */
+/* The mark is centred by its flex parent, so its own transform belongs to the
+   exit lift above alone. The entrance animates opacity only, so the two never
+   compete for it. */
 .preloader__mark {
   opacity: 0;
   animation: fade-in 760ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
@@ -380,7 +381,7 @@ summary::-webkit-details-marker {
   }
 
   .act-stage figure span {
-    max-height: 40svh;
+    max-height: min(40svh, 100%);
   }
 }
 

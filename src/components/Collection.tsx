@@ -69,20 +69,24 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
         <div
           id="collection-grid"
           ref={ref}
-          style={{ height: `${products.length * 100}svh` }}
+          className="transition-colors duration-700 ease-quiet"
+          // The colour sits on the track, not the stage. When Safari drops its toolbar the
+          // viewport grows past the 100svh stage, and the strip below it must be the same ground.
+          style={{ height: `${products.length * 100}svh`, backgroundColor: ground(active) }}
         >
-          <div
-            className="act-stage sticky top-0 flex h-svh items-center overflow-hidden transition-colors duration-700 ease-quiet"
-            style={{ backgroundColor: ground(active) }}
-          >
+          {/* Padded clear of the notch and home indicator, and on a phone in portrait clear of
+              the header too, which comes back the moment the reader scrolls up. */}
+          <div className="act-stage sticky top-0 flex h-svh items-center overflow-hidden pb-[env(safe-area-inset-bottom)] pt-[calc(76px+env(safe-area-inset-top))] sm:pt-[calc(82px+env(safe-area-inset-top))] short:pt-[env(safe-area-inset-top)] lg:pt-[env(safe-area-inset-top)]">
             {/* No washed-out copy of the photograph behind the type. It would
                 duplicate the image already shown beside it, and — the reason it
                 came out — a 34% bright image over the ground lifts the backdrop
                 far enough that pearl text drops under AA on saffron. The pure
                 field is both safer and the stronger statement. */}
-            <div className="relative mx-auto grid w-full max-w-[1500px] gap-8 px-safe [--gutter:1.25rem] sm:[--gutter:2rem] lg:grid-cols-2 lg:items-center lg:gap-16 lg:[--gutter:2.5rem]">
-              <figure className="order-2 m-0 lg:order-none">
-                <span className="relative block aspect-[4/5] max-h-[52svh] overflow-hidden lg:max-h-[70svh]">
+            {/* Below the desktop grid the photograph takes whatever height the type leaves, so the
+                act always fits its one screen. A phone on its side puts it beside the type. */}
+            <div className="relative mx-auto grid max-h-full w-full max-w-[1500px] gap-8 px-safe [--gutter:1.25rem] max-lg:grid-rows-[auto_minmax(0,1fr)] sm:[--gutter:2rem] short:grid-cols-[auto_minmax(0,1fr)] short:grid-rows-1 short:items-center lg:grid-cols-2 lg:items-center lg:gap-16 lg:[--gutter:2.5rem]">
+              <figure className="order-2 m-0 min-h-0 short:order-none lg:order-none">
+                <span className="relative block aspect-[4/5] max-h-[min(52svh,100%)] overflow-hidden short:h-[min(72svh,50vw)] short:max-h-none lg:max-h-[70svh]">
                   {products.map((product, index) => (
                     <img
                       key={product.id}
@@ -101,7 +105,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
                 </span>
               </figure>
 
-              <div className="order-1 text-pearl lg:order-none" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+              <div className="order-1 text-pearl short:order-none lg:order-none" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
                 {/* Keyed on the act so the name re-runs its reveal each time. */}
                 <div key={active.id}>
                   <p className="font-latin text-xs tracking-[0.24em] text-pearl/70">
@@ -190,9 +194,9 @@ interface PanelProps {
 function Panel({ product, index, locale, onOpen, DirectionArrow }: PanelProps) {
   return (
     <div style={{ backgroundColor: ground(product) }}>
-      <div className="mx-auto grid max-w-[1500px] gap-8 px-safe py-16 [--gutter:1.25rem] sm:[--gutter:2rem] lg:grid-cols-2 lg:items-center lg:gap-16 lg:[--gutter:2.5rem]">
-        <figure className="order-2 m-0 lg:order-none">
-          <span className="relative block aspect-[4/5] overflow-hidden">
+      <div className="mx-auto grid max-w-[1500px] gap-8 px-safe py-16 [--gutter:1.25rem] sm:[--gutter:2rem] short:grid-cols-[auto_minmax(0,1fr)] short:items-center lg:grid-cols-2 lg:items-center lg:gap-16 lg:[--gutter:2.5rem]">
+        <figure className="order-2 m-0 short:order-none lg:order-none">
+          <span className="relative block aspect-[4/5] overflow-hidden short:h-[min(72svh,50vw)]">
             <img
               src={product.image}
               alt={localize(product.imageAlt, locale)}
@@ -203,7 +207,7 @@ function Panel({ product, index, locale, onOpen, DirectionArrow }: PanelProps) {
             />
           </span>
         </figure>
-        <div className="order-1 text-pearl lg:order-none" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="order-1 text-pearl short:order-none lg:order-none" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
           <p className="font-latin text-xs tracking-[0.24em] text-pearl/70">{`0${index + 1}`}</p>
           <h3 className="display-heading mt-4 text-[clamp(3rem,7vw,5.5rem)] leading-[0.95]">
             {localize(product.name, locale)}
