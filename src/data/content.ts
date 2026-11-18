@@ -48,6 +48,18 @@ export const copy = {
     follow: { ar: 'تابعينا', en: 'Follow us' },
     opensInstagram: { ar: '(يفتح إنستغرام)', en: '(opens Instagram)' },
   },
+  label: {
+    title: { ar: 'توقيعنا عند الياقة', en: 'Our signature, at the back neck' },
+    body: {
+      ar: 'يستقر ملصق MB Design أسفل الياقة من الخلف، توقيع هادئ قريب ممن ترتديها.',
+      en: 'The MB Design label sits just below the back collar, a quiet signature close to the wearer.',
+    },
+    caption: { ar: 'الياقة الخلفية', en: 'Back neck' },
+    sceneAlt: {
+      ar: 'رسم توضيحي لملصق MB Design مثبّت أسفل الياقة الخلفية للعباية',
+      en: 'Illustration of the MB Design label stitched below the back collar of an abaya',
+    },
+  },
   craft: {
     title: { ar: 'تفاصيل تُرى وتُحس', en: 'Detail, seen and felt' },
     body: {

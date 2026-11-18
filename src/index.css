@@ -268,3 +268,290 @@ summary::-webkit-details-marker {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Header: open over the hero, solid plum once scrolled. `--p` (0..1) is written by
+   useScrollProgress; everything below derives from it with transform and opacity only. */
+.site-header {
+  --p: 0;
+}
+
+.site-header[data-menu-open] {
+  --p: 1 !important;
+}
+
+.site-header__scrim,
+.site-header__bar,
+.site-header__rule {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.site-header__scrim {
+  bottom: -40px;
+  background: linear-gradient(180deg, rgba(28, 20, 23, 0.55) 0%, rgba(28, 20, 23, 0) 100%);
+  opacity: calc(1 - var(--p));
+}
+
+.site-header__bar {
+  background: #27131d;
+  box-shadow: 0 14px 34px rgba(28, 12, 20, 0.35);
+  opacity: calc(var(--p) * 0.97);
+}
+
+/* A copper hairline drawn outward from the seal as the bar settles. */
+.site-header__rule {
+  top: auto;
+  height: 1px;
+  background: #b8744d;
+  transform: scaleX(calc(0.18 + var(--p) * 0.82));
+  opacity: calc(0.35 + var(--p) * 0.65);
+}
+
+.brand-seal {
+  --seal: 84px;
+  display: block;
+  width: var(--seal);
+  height: var(--seal);
+  perspective: 600px;
+  transform: translateY(calc((1 - var(--p)) * 20px)) scale(calc(1 - var(--p) * 0.36));
+  transform-origin: center;
+  will-change: transform;
+}
+
+@media (min-width: 640px) {
+  .brand-seal {
+    --seal: 96px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .brand-seal {
+    --seal: 118px;
+    transform: translateY(calc((1 - var(--p)) * 26px)) scale(calc(1 - var(--p) * 0.36));
+  }
+}
+
+.brand-seal__disc {
+  --rx: 0deg;
+  --ry: 0deg;
+  --lx: 35%;
+  --ly: 22%;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #5c0d23;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow:
+    inset 0 0 0 3px #5c0d23,
+    inset 0 0 0 4px rgba(214, 160, 120, 0.95),
+    inset 0 2px 1px rgba(255, 236, 222, 0.22),
+    inset 0 -6px 12px rgba(20, 4, 10, 0.45),
+    0 0 0 1px rgba(184, 116, 77, 0.55),
+    0 14px 28px rgba(20, 6, 12, 0.42),
+    0 3px 6px rgba(20, 6, 12, 0.35);
+}
+
+.brand-seal:hover .brand-seal__disc {
+  transition-duration: 120ms;
+}
+
+.brand-seal__mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scale(1.04);
+}
+
+/* A soft highlight that sits where the light falls, so the disc reads as domed. */
+.brand-seal__light {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--lx) var(--ly), rgba(255, 238, 224, 0.3) 0%, rgba(255, 238, 224, 0) 55%);
+  mix-blend-mode: screen;
+}
+
+/* One copper glint across the seal when the page opens. */
+.brand-seal__sheen {
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(105deg, transparent 42%, rgba(240, 196, 160, 0.55) 50%, transparent 58%);
+  transform: translateX(-70%);
+  animation: seal-glint 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.7s 1 both;
+  mix-blend-mode: screen;
+}
+
+@keyframes seal-glint {
+  to {
+    transform: translateX(70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-seal,
+  .brand-seal__disc {
+    transition: none;
+  }
+
+  .brand-seal__sheen {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Back-neck label scene. `--p` runs 0..1 while the stage is pinned; four phases derive from
+   it: the garment turns to face the reader, the label lands, it is stitched, then captioned. */
+.label-scene {
+  --p: 0;
+  --a: clamp(0, calc(var(--p) / 0.3), 1);
+  --b: clamp(0, calc((var(--p) - 0.18) / 0.4), 1);
+  --c: clamp(0, calc((var(--p) - 0.56) / 0.22), 1);
+  --d: clamp(0, calc((var(--p) - 0.74) / 0.18), 1);
+  --fly: 260px;
+  height: 280svh;
+}
+
+.label-scene__copy {
+  opacity: calc(0.25 + var(--a) * 0.75);
+  transform: translateY(calc((1 - var(--a)) * 24px));
+}
+
+.label-scene__stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  perspective: 1100px;
+}
+
+.label-scene__garment {
+  position: relative;
+  width: min(108%, 66svh, 680px);
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+  transform-origin: 50% 44%;
+  transform: rotateX(calc((1 - var(--a)) * 28deg)) scale(calc(0.84 + var(--a) * 0.16 + var(--d) * 0.22));
+}
+
+@media (min-width: 1024px) {
+  .label-scene__garment {
+    width: min(100%, 86svh, 760px);
+  }
+}
+
+.label-scene__fabric {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: radial-gradient(ellipse 62% 64% at 50% 42%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(ellipse 62% 64% at 50% 42%, #000 55%, transparent 100%);
+}
+
+.label-scene__seam-reveal {
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--c));
+}
+
+/* Sits on the neckline's lowest point (y 200 of 600), just under the collar band. */
+.label-scene__label {
+  position: absolute;
+  top: 37%;
+  left: 50%;
+  display: flex;
+  width: 40%;
+  aspect-ratio: 5 / 2;
+  align-items: center;
+  justify-content: center;
+  margin-left: -20%;
+  background-color: #5c0d23;
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 3px);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 222, 0.14),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+    0 calc(2px + (1 - var(--b)) * 40px) calc(4px + (1 - var(--b)) * 50px) rgba(8, 2, 5, calc(0.55 - (1 - var(--b)) * 0.3));
+  opacity: clamp(0, calc(var(--b) * 3), 1);
+  transform:
+    translate3d(0, calc((1 - var(--b)) * (1 - var(--b)) * var(--fly) * -1), calc((1 - var(--b)) * (1 - var(--b)) * 320px))
+    rotateX(calc((1 - var(--b)) * (1 - var(--b)) * 62deg))
+    rotateZ(calc((1 - var(--b)) * (1 - var(--b)) * -16deg));
+}
+
+.label-scene__stitch {
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  width: 0;
+  border-left: 1.5px dashed rgba(214, 160, 120, 0.9);
+  transform: scaleY(var(--c));
+  transform-origin: top;
+}
+
+.label-scene__stitch--start {
+  left: 6%;
+}
+
+.label-scene__stitch--end {
+  right: 6%;
+}
+
+.label-scene__caption {
+  position: absolute;
+  top: calc(37% + 7.5%);
+  left: calc(50% + 21%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: var(--d);
+  white-space: nowrap;
+  transform: scale(calc(1 / (1 + var(--d) * 0.22)));
+  transform-origin: left center;
+}
+
+.label-scene__leader {
+  display: block;
+  width: clamp(24px, 6vw, 56px);
+  height: 1px;
+  background: #b8744d;
+  transform: scaleX(var(--d));
+  transform-origin: left;
+}
+
+@media (max-width: 1023.98px) {
+  .label-scene {
+    --fly: 120px;
+    height: 240svh;
+  }
+
+  .label-scene__pin {
+    grid-template-rows: auto 1fr;
+  }
+
+  .label-scene__stage {
+    align-items: flex-start;
+    padding-top: 4svh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .label-scene {
+    height: auto;
+  }
+
+  .label-scene__pin {
+    position: relative;
+    height: auto;
+    min-height: 100svh;
+  }
+}
+
+.label-scene__garment {
+  direction: ltr;
+}
