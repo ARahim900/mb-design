@@ -22,6 +22,10 @@ export const copy = {
       ar: 'امرأة عمانية ترتدي عباية بلون الرمان مع تطريز نحاسي في فناء دافئ',
       en: 'Omani woman in a pomegranate abaya with copper embroidery in a warm courtyard',
     },
+    documentTitle: {
+      ar: 'MB Design | عبايات عُمانية معاصرة',
+      en: 'MB Design | Contemporary Omani abayas',
+    },
   },
   collection: {
     title: { ar: 'المجموعة الأولى', en: 'The first collection' },
@@ -57,23 +61,35 @@ export const copy = {
       en: 'Omani woman walking in a flowing cinnamon abaya against a warm wall',
     },
   },
-  services: [
-    {
-      id: 'delivery',
-      title: { ar: 'توصيل داخل عُمان', en: 'Delivery in Oman' },
-      body: { ar: 'الموعد النهائي يُعتمد قبل الإطلاق', en: 'Final timing to be confirmed before launch' },
+  services: {
+    delivery: {
+      title: { ar: 'توصيل داخل عُمان', en: 'Delivery across Oman' },
+      body: { ar: 'تصل قطعتك إلى باب بيتك أينما كنتِ في عُمان.', en: 'Delivered to your door, wherever you are in Oman.' },
     },
-    {
-      id: 'alterations',
+    alterations: {
       title: { ar: 'ضبط المقاس', en: 'Made to fit' },
-      body: { ar: 'خدمة التعديل تُعتمد مع العيّنات', en: 'Alterations to be confirmed with final samples' },
+      body: {
+        ar: 'ابدئي من مقاسك، ثم عدّلي الطول والكم واتساع القصّة.',
+        en: 'Start from your size, then adjust the length, sleeve and fit.',
+      },
     },
-    {
-      id: 'whatsapp',
+    whatsapp: {
       title: { ar: 'خدمة شخصية', en: 'Personal service' },
-      body: { ar: 'قناة واتساب بانتظار التفعيل', en: 'WhatsApp channel pending activation' },
+      body: {
+        ar: 'تحدّثي معنا عبر واتساب عن المقاس أو القطعة التي تناسبك.',
+        en: 'Talk to us on WhatsApp about sizing or the piece that suits you.',
+      },
+      action: { ar: 'راسلينا على واتساب', en: 'Message us on WhatsApp' },
     },
-  ],
+    pace: {
+      title: { ar: 'على مهلك', en: 'At your own pace' },
+      body: {
+        ar: 'احتفظي بالقطع في حقيبتك وراجعي المقاس والتعديلات قبل إكمال الطلب.',
+        en: 'Keep pieces in your bag and review size and adjustments before you order.',
+      },
+    },
+    newTab: { ar: '(يفتح في نافذة جديدة)', en: '(opens in a new tab)' },
+  },
   product: {
     size: { ar: 'المقاس', en: 'Size' },
     chooseSize: { ar: 'اختاري المقاس أولاً', en: 'Choose a size first' },
@@ -82,8 +98,8 @@ export const copy = {
       remove: { ar: 'إلغاء التعديلات', en: 'Remove adjustments' },
       title: { ar: 'تعديلات بسيطة', en: 'Simple adjustments' },
       intro: {
-        ar: 'يبقى المقاس المختار هو الأساس. أضيفي فقط التعديلات التي تحتاجينها.',
-        en: 'Your selected size remains the base. Add only the adjustments you need.',
+        ar: 'يبقى المقاس المختار هو الأساس. املئي فقط ما تريدين تعديله، وتبقى الحقول الفارغة على المقاس الأساسي.',
+        en: 'Your selected size remains the base. Fill in only what you want changed; empty fields keep the standard measurements.',
       },
       length: { ar: 'الطول الكامل', en: 'Overall length' },
       lengthHelp: {
@@ -103,7 +119,10 @@ export const copy = {
       standard: { ar: 'أساسي', en: 'Standard' },
       relaxed: { ar: 'أوسع', en: 'Relaxed' },
       unit: { ar: 'سم', en: 'cm' },
-      addOne: { ar: 'أضيفي تعديلاً واحداً على الأقل.', en: 'Add at least one adjustment.' },
+      outOfRange: {
+        ar: 'أدخلي رقماً بين {min} و{max} سم.',
+        en: 'Enter a number between {min} and {max} cm.',
+      },
       cartLabel: { ar: 'تعديلات المقاس', en: 'Custom adjustments' },
     },
     add: { ar: 'أضيفي إلى الحقيبة', en: 'Add to bag' },
@@ -115,13 +134,32 @@ export const copy = {
     details: { ar: 'التصميم والخامة', en: 'Design and fabric' },
     fit: { ar: 'المقاس والقصّة', en: 'Size and cut' },
     fitBody: {
-      ar: 'قصّة منسدلة بطول كامل. يُضاف دليل المقاسات النهائي بعد اعتماد العيّنات.',
-      en: 'A full-length fluid cut. Final sizing guidance will follow sample approval.',
+      ar: 'قصّة منسدلة بطول كامل. إن احتجتِ طولاً أو كمّاً مختلفاً، اختاري «خصّصي هذا المقاس» وأدخلي القياس الذي يناسبك.',
+      en: 'A full-length, fluid cut. If you need a different length or sleeve, choose “Customise this size” and enter the measurement that suits you.',
     },
     delivery: { ar: 'التوصيل والإرجاع', en: 'Delivery and returns' },
-    deliveryBody: {
-      ar: 'السياسة النهائية بانتظار اعتماد التشغيل قبل الإطلاق.',
-      en: 'The final policy awaits operational approval before launch.',
+    deliveryTime: { ar: 'التوصيل خلال {time}', en: 'Delivery in {time}' },
+    deliveryFee: { ar: 'رسوم التوصيل {fee}', en: 'Delivery fee {fee}' },
+    freeDelivery: { ar: 'توصيل مجاني داخل عُمان', en: 'Free delivery within Oman' },
+    sizeGuide: {
+      open: { ar: 'دليل المقاسات', en: 'Size guide' },
+      title: { ar: 'دليل المقاسات', en: 'Size guide' },
+      size: { ar: 'المقاس', en: 'Size' },
+      height: { ar: 'طولكِ (سم)', en: 'Your height (cm)' },
+      length: { ar: 'طول العباية (سم)', en: 'Garment length (cm)' },
+      howTo: {
+        ar: 'اختاري المقاس الذي يناسب طولكِ. يُقاس طول العباية من أعلى الكتف حتى الحافة السفلية.',
+        en: 'Choose the size that matches your height. Garment length is measured from the top of the shoulder to the hem.',
+      },
+    },
+    gallery: {
+      label: { ar: 'صور القطعة', en: 'Product photos' },
+      previous: { ar: 'الصورة السابقة', en: 'Previous photo' },
+      next: { ar: 'الصورة التالية', en: 'Next photo' },
+      show: { ar: 'عرض الصورة {index}', en: 'Show photo {index}' },
+      slide: { ar: 'صورة {index} من {count}', en: 'Photo {index} of {count}' },
+      carouselRole: { ar: 'معرض صور', en: 'carousel' },
+      slideRole: { ar: 'صورة', en: 'slide' },
     },
     close: { ar: 'إغلاق تفاصيل القطعة', en: 'Close product details' },
   },
@@ -136,32 +174,73 @@ export const copy = {
     remove: { ar: 'إزالة', en: 'Remove' },
     decrease: { ar: 'تقليل الكمية', en: 'Decrease quantity' },
     increase: { ar: 'زيادة الكمية', en: 'Increase quantity' },
+    quantity: { ar: 'الكمية', en: 'Qty' },
     total: { ar: 'المجموع', en: 'Total' },
-    checkout: { ar: 'إكمال البيانات', en: 'Continue' },
-    back: { ar: 'العودة إلى الحقيبة', en: 'Back to bag' },
-    previewNote: {
-      ar: 'تجربة واجهة فقط. لا تُرسل الطلبات في هذه النسخة.',
-      en: 'Storefront preview only. Orders are not sent in this build.',
+    checkout: { ar: 'متابعة إلى البيانات', en: 'Continue to details' },
+    back: { ar: 'رجوع', en: 'Back' },
+    steps: {
+      label: { ar: 'مراحل الطلب', en: 'Order steps' },
+      bag: { ar: 'الحقيبة', en: 'Bag' },
+      details: { ar: 'البيانات', en: 'Details' },
+      confirm: { ar: 'التأكيد', en: 'Confirm' },
     },
   },
   checkout: {
-    title: { ar: 'بيانات الطلب التجريبي', en: 'Preview order details' },
-    name: { ar: 'الاسم', en: 'Name' },
-    mobile: { ar: 'رقم الهاتف', en: 'Mobile number' },
-    area: { ar: 'الولاية', en: 'Area' },
+    title: { ar: 'بيانات الطلب', en: 'Order details' },
+    confirmTitle: { ar: 'تأكيد الطلب', en: 'Confirm order' },
+    summary: { ar: 'ملخّص الطلب', en: 'Order summary' },
+    subtotal: { ar: 'المجموع الفرعي', en: 'Subtotal' },
+    delivery: { ar: 'التوصيل', en: 'Delivery' },
+    deliveryFree: { ar: 'توصيل مجاني', en: 'Free delivery' },
+    deliveryPending: { ar: 'تُؤكَّد الرسوم عبر واتساب', en: 'Fee confirmed on WhatsApp' },
+    total: { ar: 'المجموع', en: 'Total' },
+    totalBeforeDelivery: { ar: 'المجموع قبل التوصيل', en: 'Total before delivery' },
+    contact: { ar: 'بيانات التواصل', en: 'Contact' },
     address: { ar: 'عنوان التوصيل', en: 'Delivery address' },
-    submit: { ar: 'حفظ الطلب التجريبي', en: 'Save preview order' },
-    confirmedTitle: { ar: 'تم حفظ الطلب التجريبي', en: 'Preview order saved' },
-    confirmedBody: {
-      ar: 'لم يُرسل أي طلب ولم يُسجَّل أي دفع. هذه تجربة واجهة فقط.',
-      en: 'No order was sent and no payment was taken. This is a storefront preview only.',
+    name: { ar: 'الاسم الكامل', en: 'Full name' },
+    mobile: { ar: 'رقم الهاتف', en: 'Mobile number' },
+    mobileHelp: { ar: 'ثمانية أرقام تبدأ بـ 7 أو 9.', en: '8 digits starting with 7 or 9.' },
+    governorate: { ar: 'المحافظة', en: 'Governorate' },
+    wilayat: { ar: 'الولاية', en: 'Wilayat' },
+    choose: { ar: 'اختاري', en: 'Select' },
+    chooseGovernorateFirst: { ar: 'اختاري المحافظة أولاً', en: 'Select a governorate first' },
+    area: { ar: 'المنطقة أو الحي', en: 'Area' },
+    street: { ar: 'الشارع', en: 'Street' },
+    house: { ar: 'رقم المنزل أو المبنى', en: 'House or building number' },
+    optional: { ar: '(اختياري)', en: '(optional)' },
+    errors: {
+      name: { ar: 'اكتبي اسمك.', en: 'Enter your name.' },
+      mobileRequired: { ar: 'اكتبي رقم هاتفك.', en: 'Enter your mobile number.' },
+      mobileInvalid: { ar: 'أدخلي ثمانية أرقام تبدأ بـ 7 أو 9.', en: 'Enter 8 digits starting with 7 or 9.' },
+      governorate: { ar: 'اختاري المحافظة.', en: 'Select your governorate.' },
+      wilayat: { ar: 'اختاري الولاية.', en: 'Select your wilayat.' },
+      area: { ar: 'اكتبي المنطقة أو الحي.', en: 'Enter your area.' },
+      house: { ar: 'اكتبي رقم المنزل أو المبنى.', en: 'Enter your house or building number.' },
     },
-  },
-  preview: {
-    title: { ar: 'نسخة تطويرية', en: 'Development preview' },
-    body: {
-      ar: 'التصاميم والأسعار والصور مفاهيم إطلاق، وتحتاج اعتماد العيّنات والتصوير النهائي قبل البيع.',
-      en: 'Designs, prices and imagery are launch concepts requiring final samples and photography before sale.',
+    review: { ar: 'مراجعة الطلب', en: 'Review order' },
+    deliverTo: { ar: 'التوصيل إلى', en: 'Deliver to' },
+    editDetails: { ar: 'تعديل البيانات', en: 'Edit details' },
+    send: { ar: 'أرسلي الطلب عبر واتساب', en: 'Send order on WhatsApp' },
+    sendHint: {
+      ar: 'يُفتح واتساب برسالة جاهزة تتضمّن طلبك وبياناتك.',
+      en: 'WhatsApp opens with your order and details ready to send.',
+    },
+    newTab: { ar: '(يُفتح في نافذة جديدة)', en: '(opens in a new tab)' },
+    unavailable: {
+      ar: 'الطلب عبر واتساب يُتاح قريباً.',
+      en: 'Ordering on WhatsApp opens soon.',
+    },
+    sentTitle: { ar: 'طلبك جاهز في واتساب', en: 'Your order is ready in WhatsApp' },
+    sentBody: {
+      ar: 'فتحنا واتساب برسالة طلبك. أرسلي الرسالة لتأكيد الطلب.',
+      en: 'We have opened WhatsApp with your order. Send the message to confirm.',
+    },
+    reopen: { ar: 'افتحي واتساب مجدداً', en: 'Open WhatsApp again' },
+    clearBag: { ar: 'إفراغ الحقيبة', en: 'Clear the bag' },
+    continueShopping: { ar: 'متابعة التسوّق', en: 'Continue shopping' },
+    message: {
+      greeting: { ar: 'مرحباً MB Design، أودّ طلب:', en: 'Hello MB Design, I would like to order:' },
+      customer: { ar: 'بيانات التوصيل', en: 'Delivery details' },
     },
   },
   footer: {
@@ -170,7 +249,14 @@ export const copy = {
       en: 'A contemporary Omani fashion house. Considered colour, a clear line and effortless presence.',
     },
     navLabel: { ar: 'روابط الأقسام', en: 'Section links' },
+    contactLabel: { ar: 'تواصلي معنا', en: 'Contact' },
+    whatsapp: { ar: 'واتساب', en: 'WhatsApp' },
+    instagram: { ar: 'إنستغرام', en: 'Instagram' },
+    email: { ar: 'البريد الإلكتروني', en: 'Email' },
+    policiesLabel: { ar: 'السياسات', en: 'Policies' },
+    cr: { ar: 'السجل التجاري رقم', en: 'CR No.' },
     rights: { ar: 'جميع الحقوق محفوظة', en: 'All rights reserved' },
+    closePolicy: { ar: 'إغلاق', en: 'Close' },
   },
 } as const;
 
@@ -253,16 +339,25 @@ export function localize(text: LocalizedText, locale: Locale): string {
   return text[locale];
 }
 
-/**
- * Digits outside a price. Arabic uses Arabic-Indic numerals here for the same reason
- * `formatOmr` does — a Latin "3" beside a price reading "١٦٥ ر.ع." reads as two languages.
- */
-export function formatNumber(value: number, locale: Locale): string {
-  return new Intl.NumberFormat(locale === 'ar' ? 'ar-OM' : 'en-OM').format(value);
+/** Replaces each `{name}` in a localised template. */
+export function fillTemplate(template: string, values: Readonly<Record<string, string>>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
 }
 
+/**
+ * Western digits in both languages. Sizes such as "54" and centimetre inputs are always typed
+ * in Western digits, so prices and counts follow them; one digit style keeps the page from
+ * reading as two languages. `nu-latn` keeps the Arabic locale's grouping and separators.
+ */
+const numberLocale: Record<Locale, string> = { ar: 'ar-OM-u-nu-latn', en: 'en-OM' };
+
+export function formatNumber(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(numberLocale[locale]).format(value);
+}
+
+/** Arabic keeps "ر.ع." after the number; English leads with "OMR". */
 export function formatOmr(value: number, locale: Locale): string {
-  const formatted = new Intl.NumberFormat(locale === 'ar' ? 'ar-OM' : 'en-OM', {
+  const formatted = new Intl.NumberFormat(numberLocale[locale], {
     maximumFractionDigits: 0,
   }).format(value);
 

@@ -61,7 +61,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
             </h2>
             <span className="my-6 block h-px w-14 bg-copper" aria-hidden="true" />
             <p className="text-base leading-8 text-copper-deep">{localize(copy.collection.secondary, locale)}</p>
-            <p className="mt-5 text-sm leading-7 text-shade">{localize(copy.collection.body, locale)}</p>
+            <p className="mt-5 text-sm leading-7 text-ink/75">{localize(copy.collection.body, locale)}</p>
             <a className="mt-8 inline-flex min-h-11 items-center gap-3 border-b border-copper pb-2 text-sm transition-colors hover:text-pomegranate focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper" href="#collection-grid">
               {localize(copy.collection.all, locale)}
               <DirectionArrow aria-hidden="true" size={17} strokeWidth={1.25} />
@@ -104,7 +104,7 @@ export function Collection({ locale, onProductOpen }: CollectionProps) {
                     </span>
                     <span id={`${product.id}-price`} className="pt-2 text-sm tabular-nums text-date">{formatOmr(product.priceOmr, locale)}</span>
                   </span>
-                  <span id={`${product.id}-description`} className="mt-4 block text-sm leading-7 text-shade">{localize(product.description, locale)}</span>
+                  <span id={`${product.id}-description`} className="mt-4 block text-sm leading-7 text-ink/75">{localize(product.description, locale)}</span>
                   <span className="mt-5 flex min-h-11 items-center justify-between gap-4 border-t border-copper/35 pt-4 text-sm font-medium text-date transition-colors group-hover:text-pomegranate">
                     <span>{localize(copy.collection.productAction, locale)}</span>
                     <DirectionArrow aria-hidden="true" size={17} strokeWidth={1.25} className="transition-transform duration-300 group-hover:-translate-x-1 rtl:group-hover:translate-x-1 motion-reduce:transition-none" />

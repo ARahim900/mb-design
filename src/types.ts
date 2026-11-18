@@ -2,6 +2,15 @@ export type Locale = 'ar' | 'en';
 
 export type LocalizedText = Readonly<Record<Locale, string>>;
 
+export type GalleryShot = 'front' | 'back' | 'detail' | 'lining' | 'movement';
+
+export interface GalleryImage {
+  readonly src: string;
+  readonly alt: LocalizedText;
+  readonly shot: GalleryShot;
+  readonly position?: string;
+}
+
 export interface Product {
   readonly id: string;
   readonly name: LocalizedText;
@@ -9,6 +18,8 @@ export interface Product {
   readonly image: string;
   readonly imageAlt: LocalizedText;
   readonly imagePosition: string;
+  /** Full gallery, front shot first. Falls back to `image` alone when absent. */
+  readonly gallery?: readonly GalleryImage[];
   readonly description: LocalizedText;
   readonly details: LocalizedText;
   readonly fabric: LocalizedText;
