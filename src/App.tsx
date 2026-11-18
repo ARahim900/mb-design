@@ -13,6 +13,7 @@ import { Collection } from './components/Collection';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { Lookbook } from './components/Lookbook';
 import { ProductDialog } from './components/ProductDialog';
 import { Services } from './components/Services';
 import { Story } from './components/Story';
@@ -90,6 +91,7 @@ function App() {
       <main id="main" tabIndex={-1}>
         <Hero locale={locale} />
         <Collection locale={locale} onProductOpen={setSelectedProduct} />
+        <Lookbook locale={locale} />
         <Craftsmanship locale={locale} />
         <Story locale={locale} />
         <Services locale={locale} />

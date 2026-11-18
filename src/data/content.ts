@@ -1,4 +1,4 @@
-import type { Locale, LocalizedText, Product } from '../types';
+import type { Locale, LocalizedText, LookbookLook, Product } from '../types';
 
 export const copy = {
   nav: {
@@ -37,6 +37,16 @@ export const copy = {
     productAction: { ar: 'تفاصيل القطعة', en: 'View details' },
     all: { ar: 'اكتشفي جميع القطع', en: 'Explore every piece' },
     goTo: { ar: 'اذهبي إلى', en: 'Go to' },
+  },
+  lookbook: {
+    title: { ar: 'كما تُلبَس', en: 'As worn' },
+    body: {
+      ar: 'قطع حقيقية من MB Design، كما ظهرت على إنستغرام.',
+      en: 'Real MB Design pieces, as they appear on Instagram.',
+    },
+    watch: { ar: 'شاهدي الفيديو', en: 'Watch the reel' },
+    follow: { ar: 'تابعينا', en: 'Follow us' },
+    opensInstagram: { ar: '(يفتح إنستغرام)', en: '(opens Instagram)' },
   },
   craft: {
     title: { ar: 'تفاصيل تُرى وتُحس', en: 'Detail, seen and felt' },
@@ -332,6 +342,73 @@ export const products: readonly Product[] = [
     signature: { ar: 'طبقات رمانية وتطريز نباتي', en: 'Pomegranate layers with botanical embroidery' },
     colorHex: '#3A1934',
     sizes: ['52', '54', '56', '58'],
+  },
+];
+
+// Covers of MB Design's own Instagram reels (@mbdesign.om), used with the brand's permission.
+export const lookbook: readonly LookbookLook[] = [
+  {
+    id: 'look-01',
+    reel: 'DdCtAKuI3Xa',
+    src: '/assets/lookbook/look-01.webp',
+    srcSmall: '/assets/lookbook/look-01-360.webp',
+    width: 640,
+    height: 1137,
+    alt: {
+      ar: 'عباية متدرّجة بلون التيراكوتا بطبقة مفتوحة منسدلة فوق فستان رملي',
+      en: 'Terracotta ombré abaya with a flowing open layer over a sand-toned dress',
+    },
+  },
+  {
+    id: 'look-02',
+    reel: 'DXYu3eWDOqb',
+    src: '/assets/lookbook/look-02.webp',
+    srcSmall: '/assets/lookbook/look-02-360.webp',
+    width: 720,
+    height: 1280,
+    alt: { ar: 'عباية عاجية بطبقة دانتيل أسود مزهّر', en: 'Ivory abaya layered with black floral lace' },
+  },
+  {
+    id: 'look-03',
+    reel: 'DZM0Kf2IhZe',
+    src: '/assets/lookbook/look-03.webp',
+    srcSmall: '/assets/lookbook/look-03-360.webp',
+    width: 640,
+    height: 1137,
+    alt: {
+      ar: 'عباية سوداء بتطريز زهري فيروزي على الياقة والأكمام',
+      en: 'Black abaya with turquoise floral embroidery on the lapels and cuffs',
+    },
+  },
+  {
+    id: 'look-04',
+    reel: 'C1ej3M4NLZr',
+    src: '/assets/lookbook/look-04.webp',
+    srcSmall: '/assets/lookbook/look-04-360.webp',
+    width: 720,
+    height: 1280,
+    alt: {
+      ar: 'جلابية بنفسجية داكنة بتطريز فضي عند الصدر والأكمام',
+      en: 'Deep purple jalabiya with silver embroidery at the neckline and sleeves',
+    },
+  },
+  {
+    id: 'look-05',
+    reel: 'Dc8qjhSB0cV',
+    src: '/assets/lookbook/look-05.webp',
+    srcSmall: '/assets/lookbook/look-05-360.webp',
+    width: 640,
+    height: 1137,
+    alt: { ar: 'عباية مفتوحة بخطوط سوداء ورمادية وقرمزية', en: 'Open abaya in black, grey and crimson stripes' },
+  },
+  {
+    id: 'look-06',
+    reel: 'DXYt4ZZDGei',
+    src: '/assets/lookbook/look-06.webp',
+    srcSmall: '/assets/lookbook/look-06-360.webp',
+    width: 640,
+    height: 1137,
+    alt: { ar: 'عباية سوداء بزخرفة زهرية عند الخصر', en: 'Black abaya with floral appliqué at the waist' },
   },
 ];
 

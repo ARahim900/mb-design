@@ -39,7 +39,7 @@ export interface BrandFacts {
 
 export const brand: BrandFacts = {
   whatsappNumber: '',
-  instagramHandle: '',
+  instagramHandle: 'mbdesign.om',
   email: '',
   crNumber: '',
   sizeChart: [],
