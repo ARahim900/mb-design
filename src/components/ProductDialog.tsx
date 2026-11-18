@@ -1,10 +1,13 @@
 import { ChevronDown, Scissors, X } from 'lucide-react';
-import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import { type MouseEvent, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { copy, formatOmr, localize } from '../data/content';
+import { brand } from '../data/brand';
+import { copy, fillTemplate, formatOmr, localize } from '../data/content';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import type { CustomFit, Locale, Product } from '../types';
-import { CustomFitPanel, type CustomFitDraft } from './CustomFitPanel';
+import { CustomFitPanel, type CustomFitDraft, firstInvalidMeasurement, toCustomFit } from './CustomFitPanel';
+import { ProductGallery } from './ProductGallery';
+import { SizeGuide, SizeGuideToggle, hasSizeGuide } from './SizeGuide';
 
 const EMPTY_CUSTOM_FIT: CustomFitDraft = {
   lengthCm: '',
@@ -24,6 +27,38 @@ interface DetailRowProps {
   readonly body: string;
 }
 
+interface OrderBarProps {
+  readonly locale: Locale;
+  readonly priceOmr: number;
+  readonly status: string;
+  readonly sizeChosen: boolean;
+  readonly deliveryLine: string;
+  readonly onAdd: () => void;
+}
+
+/** Short delivery and returns facts, each present only once MB Design has confirmed it. */
+function deliveryFacts(locale: Locale): string[] {
+  const facts: string[] = [];
+  if (brand.deliveryTime) {
+    facts.push(fillTemplate(localize(copy.product.deliveryTime, locale), { time: localize(brand.deliveryTime, locale) }));
+  }
+  if (brand.deliveryFeeOmr === 0) {
+    facts.push(localize(copy.product.freeDelivery, locale));
+  } else if (brand.deliveryFeeOmr !== null) {
+    facts.push(fillTemplate(localize(copy.product.deliveryFee, locale), { fee: formatOmr(brand.deliveryFeeOmr, locale) }));
+  }
+  if (brand.returnsSummary) facts.push(localize(brand.returnsSummary, locale));
+  return facts;
+}
+
+/** The full delivery and returns text: the policy pages when supplied, else the short facts. */
+function deliveryDetails(locale: Locale, facts: readonly string[]): string {
+  const policies = brand.policies
+    .filter((policy) => policy.id === 'delivery' || policy.id === 'returns')
+    .map((policy) => localize(policy.body, locale));
+  return policies.length > 0 ? policies.join('\n\n') : facts.join(' · ');
+}
+
 function DetailRow({ title, body }: DetailRowProps) {
   return (
     <details className="group border-t border-copper/45 py-4 last:border-b">
@@ -31,21 +66,46 @@ function DetailRow({ title, body }: DetailRowProps) {
         <span>{title}</span>
         <ChevronDown aria-hidden="true" size={17} strokeWidth={1.3} className="transition-transform duration-300 group-open:rotate-180 motion-reduce:transition-none" />
       </summary>
-      <p className="pb-3 pt-2 text-sm leading-relaxed text-shade">{body}</p>
+      <p className="whitespace-pre-line pb-3 pt-2 text-sm leading-relaxed text-shade">{body}</p>
     </details>
+  );
+}
+
+// In the copy column's flow, pinned to the bottom of whichever box scrolls: the whole sheet on a
+// portrait phone, the copy column beside the photo everywhere else. Being in flow, it never covers
+// the last accordion, and nothing opened above it can push it out of view.
+function OrderBar({ locale, priceOmr, status, sizeChosen, deliveryLine, onAdd }: OrderBarProps) {
+  return (
+    <div className="sticky bottom-0 z-20 -mx-5 mt-auto border-t border-copper/45 bg-pearl/95 px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-16px_40px_rgba(39,19,29,0.12)] backdrop-blur-md sm:-mx-10 sm:px-10 sm:pb-[0.9rem] short:-mx-8 short:px-8 lg:-mx-12 lg:px-12 lg:pb-5 xl:-mx-16 xl:px-16">
+      <div className="mx-auto w-full max-w-lg">
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <p className={`min-w-0 text-xs ${sizeChosen ? 'text-shade' : 'text-copper-deep'}`} aria-live="polite">
+            {status}
+          </p>
+          <p className="shrink-0 text-sm tabular-nums text-date">{formatOmr(priceOmr, locale)}</p>
+        </div>
+        {deliveryLine && <p className="mb-2 text-xs leading-5 text-shade">{deliveryLine}</p>}
+        <button type="button" className="button-primary min-h-14 w-full px-6 py-3 shadow-button" onClick={onAdd}>
+          {localize(copy.product.add, locale)}
+        </button>
+      </div>
+    </div>
   );
 }
 
 export function ProductDialog({ locale, product, onClose, onAddToCart }: ProductDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const scrollRegionRef = useRef<HTMLDivElement>(null);
-  const sizeGroupRef = useRef<HTMLFieldSetElement>(null);
+  const sizeGroupRef = useRef<HTMLDivElement>(null);
   const customFitRef = useRef<HTMLDivElement>(null);
+  const sizeLabelId = useId();
+  const sizeGuideId = useId();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [customFitEnabled, setCustomFitEnabled] = useState(false);
   const [customFit, setCustomFit] = useState<CustomFitDraft>(EMPTY_CUSTOM_FIT);
-  const [customFitError, setCustomFitError] = useState(false);
+  const [showFitErrors, setShowFitErrors] = useState(false);
 
   useModalScrollLock(product !== null);
 
@@ -59,13 +119,23 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
       if (scrollRegionRef.current) scrollRegionRef.current.scrollTop = 0;
       setSelectedSize(null);
       setSizeError(false);
+      setSizeGuideOpen(false);
       setCustomFitEnabled(false);
       setCustomFit(EMPTY_CUSTOM_FIT);
-      setCustomFitError(false);
+      setShowFitErrors(false);
     } else if (!product && dialog.open) {
       dialog.close();
     }
   }, [product]);
+
+  useEffect(() => {
+    if (!product) return;
+    const previousTitle = document.title;
+    document.title = `${localize(product.name, locale)} | MB Design`;
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [product, locale]);
 
   const handleAdd = () => {
     if (!product) return;
@@ -81,29 +151,23 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
       return;
     }
 
-    const lengthCm = customFit.lengthCm.trim();
-    const sleeveCm = customFit.sleeveCm.trim();
-    if (!lengthCm && !sleeveCm && customFit.fit === 'standard') {
-      setCustomFitError(true);
-      customFitRef.current?.querySelector('input')?.focus({ preventScroll: true });
-      // The alert renders on the next frame. Resting it just above the order bar leaves room
-      // above it for the field that now has focus, which a centred alert can push off the top.
-      requestAnimationFrame(() => document.getElementById('custom-fit-error')?.scrollIntoView({ block: 'end' }));
+    const invalidField = firstInvalidMeasurement(customFit);
+    if (invalidField) {
+      setShowFitErrors(true);
+      const input = customFitRef.current?.querySelector<HTMLInputElement>(`[data-fit-field="${invalidField}"]`);
+      input?.focus({ preventScroll: true });
+      input?.scrollIntoView({ block: 'center' });
       return;
     }
 
-    onAddToCart(product, selectedSize, {
-      ...(lengthCm ? { lengthCm } : {}),
-      ...(sleeveCm ? { sleeveCm } : {}),
-      fit: customFit.fit,
-    });
+    onAddToCart(product, selectedSize, toCustomFit(customFit));
   };
 
   const handleCustomFitToggle = () => {
     if (customFitEnabled) {
       setCustomFitEnabled(false);
       setCustomFit(EMPTY_CUSTOM_FIT);
-      setCustomFitError(false);
+      setShowFitErrors(false);
       return;
     }
 
@@ -123,6 +187,13 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
         { label: localize(copy.product.signature, locale), value: localize(product.signature, locale) },
       ]
     : [];
+  const hasAdjustments = customFitEnabled && toCustomFit(customFit) !== undefined;
+  const orderStatus = selectedSize
+    ? `${localize(copy.product.size, locale)} · ${selectedSize}${hasAdjustments ? ` · ${localize(copy.product.customFit.title, locale)}` : ''}`
+    : localize(copy.product.chooseSize, locale);
+  const facts = deliveryFacts(locale);
+  const deliveryBody = deliveryDetails(locale, facts);
+  const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   // Rendered into <body> rather than inside the app shell: a `transform`, `filter` or
   // `contain` on any ancestor makes that ancestor the containing block for fixed-position
@@ -149,20 +220,12 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
           {/* The scroll padding matches the sticky band at the top and the order bar at the
               bottom, so a control that takes focus or is scrolled into view lands between them
               rather than behind either. Sideways, the copy column scrolls and carries it instead. */}
-          <div ref={scrollRegionRef} className="grid h-full scroll-pt-[calc(env(safe-area-inset-top)+4.25rem)] scroll-pb-[calc(env(safe-area-inset-bottom)+7.5rem)] overflow-y-auto overscroll-contain sm:scroll-pt-[4.5rem] sm:scroll-pb-[7.5rem] short:grid-cols-[2fr_3fr] short:overflow-hidden short:scroll-p-0 short:[direction:ltr] lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:scroll-p-0 lg:[direction:ltr]">
-          <div className="relative z-20 h-[40svh] min-h-[280px] max-h-[430px] overflow-hidden bg-sand short:h-auto short:min-h-0 short:max-h-none lg:h-auto lg:min-h-0 lg:max-h-none">
-            <img
-              src={product.image}
-              alt={localize(product.imageAlt, locale)}
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: product.imagePosition }}
-              decoding="async"
-            />
-          </div>
+          <div ref={scrollRegionRef} className="grid h-full scroll-pt-[calc(env(safe-area-inset-top)+4.25rem)] scroll-pb-[calc(env(safe-area-inset-bottom)+8.5rem)] overflow-y-auto overscroll-contain sm:scroll-pt-[4.5rem] sm:scroll-pb-[8.5rem] short:grid-cols-[2fr_3fr] short:overflow-hidden short:scroll-p-0 short:[direction:ltr] lg:grid-cols-[1.25fr_0.75fr] lg:overflow-hidden lg:scroll-p-0 lg:[direction:ltr]">
+          <ProductGallery key={product.id} locale={locale} product={product} />
 
           <div
-            className="relative flex flex-col justify-start px-5 pb-[calc(7.5rem+env(safe-area-inset-bottom))] sm:px-10 short:min-h-full short:scroll-pb-[calc(7.5rem+env(safe-area-inset-bottom))] short:overflow-y-auto short:px-8 short:pt-8 lg:min-h-full lg:overflow-y-auto lg:px-12 lg:py-16 xl:px-16"
-            dir={locale === 'ar' ? 'rtl' : 'ltr'}
+            className="relative flex flex-col justify-start px-5 sm:px-10 short:min-h-full short:scroll-pb-[8.5rem] short:overflow-y-auto short:px-8 short:pt-8 lg:min-h-full lg:scroll-pb-[8.5rem] lg:overflow-y-auto lg:px-12 lg:pt-16 xl:px-16"
+            dir={dir}
           >
             {/* The column's top padding, made sticky so the copy scrolls under it rather than
                 under the close button. The pearl above it sits behind the photo, so it shows only
@@ -174,7 +237,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
             />
             {/* Auto margins centre the copy when it fits; justify-center would clip the top of a
                 column taller than the sheet, out of reach of scrolling. */}
-            <div className="mx-auto w-full max-w-lg lg:my-auto">
+            <div className="mx-auto w-full max-w-lg pb-10 lg:my-auto">
               <h2 className="font-display text-4xl font-normal leading-tight sm:text-6xl">{localize(product.name, locale)}</h2>
               <p className="mt-1 text-sm uppercase tracking-[0.1em] text-shade" lang={locale === 'ar' ? 'en' : 'ar'}>
                 {localize(product.name, locale === 'ar' ? 'en' : 'ar')}
@@ -183,8 +246,26 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
               <p className="text-lg tabular-nums">{formatOmr(product.priceOmr, locale)}</p>
               <p className="mt-4 max-w-md text-sm leading-7 text-shade sm:mt-5">{localize(product.description, locale)}</p>
 
-              <fieldset ref={sizeGroupRef} className="mt-7 scroll-mt-6" aria-describedby={sizeError ? 'product-size-error' : undefined}>
-                <legend className="mb-3 text-sm text-shade">{localize(copy.product.size, locale)}</legend>
+              <div
+                ref={sizeGroupRef}
+                role="group"
+                className="mt-7 scroll-mt-6"
+                aria-labelledby={sizeLabelId}
+                aria-describedby={sizeError ? 'product-size-error' : undefined}
+              >
+                <div className="mb-3 flex items-center justify-between gap-4">
+                  <span id={sizeLabelId} className="text-sm text-shade">
+                    {localize(copy.product.size, locale)}
+                  </span>
+                  {hasSizeGuide && (
+                    <SizeGuideToggle
+                      locale={locale}
+                      open={sizeGuideOpen}
+                      controls={sizeGuideId}
+                      onToggle={() => setSizeGuideOpen((open) => !open)}
+                    />
+                  )}
+                </div>
                 <div className="grid grid-cols-4 gap-2">
                   {product.sizes.map((size) => (
                     <button
@@ -206,7 +287,8 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
                     {localize(copy.product.chooseSize, locale)}
                   </p>
                 )}
-              </fieldset>
+                {hasSizeGuide && sizeGuideOpen && <SizeGuide locale={locale} id={sizeGuideId} />}
+              </div>
 
               <button
                 type="button"
@@ -228,15 +310,7 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
 
               {customFitEnabled && (
                 <div ref={customFitRef} className="mt-3 scroll-mt-6">
-                  <CustomFitPanel
-                    locale={locale}
-                    value={customFit}
-                    hasError={customFitError}
-                    onChange={(value) => {
-                      setCustomFit(value);
-                      setCustomFitError(false);
-                    }}
-                  />
+                  <CustomFitPanel locale={locale} value={customFit} showErrors={showFitErrors} onChange={setCustomFit} />
                 </div>
               )}
 
@@ -257,35 +331,22 @@ export function ProductDialog({ locale, product, onClose, onAddToCart }: Product
                 </dl>
               </section>
 
-              <button type="button" className="button-primary mt-7 hidden min-h-14 w-full px-6 py-3 shadow-button lg:inline-flex" onClick={handleAdd}>
-                {localize(copy.product.add, locale)}
-              </button>
-
               <div className="mt-8 lg:mt-10">
                 <DetailRow title={localize(copy.product.details, locale)} body={localize(product.details, locale)} />
                 <DetailRow title={localize(copy.product.fit, locale)} body={localize(copy.product.fitBody, locale)} />
-                <DetailRow title={localize(copy.product.delivery, locale)} body={localize(copy.product.deliveryBody, locale)} />
+                {deliveryBody && <DetailRow title={localize(copy.product.delivery, locale)} body={deliveryBody} />}
               </div>
             </div>
+
+            <OrderBar
+              locale={locale}
+              priceOmr={product.priceOmr}
+              status={orderStatus}
+              sizeChosen={selectedSize !== null}
+              deliveryLine={facts.join(' · ')}
+              onAdd={handleAdd}
+            />
           </div>
-          </div>
-          <div
-            className="absolute inset-x-0 bottom-0 z-20 border-t border-copper/45 bg-pearl/95 px-5 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-16px_40px_rgba(39,19,29,0.12)] backdrop-blur-md sm:pb-[0.9rem] short:left-[40%] lg:hidden"
-            dir={locale === 'ar' ? 'rtl' : 'ltr'}
-          >
-            {/* The price sits four screens up once the reader is in the specifications, so it
-                travels with the button they are about to press. */}
-            <div className="mb-2 flex items-center justify-between gap-4">
-              <p className={`min-w-0 text-xs ${selectedSize ? 'text-shade' : 'text-copper-deep'}`}>
-                {selectedSize
-                  ? `${localize(copy.product.size, locale)} · ${selectedSize}${customFitEnabled ? ` · ${localize(copy.product.customFit.title, locale)}` : ''}`
-                  : localize(copy.product.chooseSize, locale)}
-              </p>
-              <p className="shrink-0 text-sm tabular-nums text-date">{formatOmr(product.priceOmr, locale)}</p>
-            </div>
-            <button type="button" className="button-primary min-h-14 w-full px-6 py-3 shadow-button" onClick={handleAdd}>
-              {localize(copy.product.add, locale)}
-            </button>
           </div>
         </>
       )}

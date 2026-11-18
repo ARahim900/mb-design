@@ -15,15 +15,56 @@
     <meta name="msapplication-TileColor" content="#1C1417" />
     <meta
       name="description"
-      content="MB Design — a contemporary Omani abaya label. Bilingual launch storefront preview."
+      content="MB Design — عبايات عُمانية معاصرة بألوان مستوحاة من عُمان وتطريز يدوي. Contemporary Omani abayas in colours drawn from Oman, with hand embroidery."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MB Design" />
+    <meta property="og:url" content="https://mbdesign-store.vercel.app/" />
+    <meta property="og:title" content="MB Design | عبايات عُمانية معاصرة — Contemporary Omani abayas" />
+    <meta
+      property="og:description"
+      content="ألوان مستوحاة من أرض عُمان، بقصّات تعيش اليوم. Colours drawn from Oman, cut for the present."
+    />
+    <meta property="og:image" content="https://mbdesign-store.vercel.app/og/mb-design-og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="MB Design — امرأة عمانية بعباية بلون الرمان مع تطريز نحاسي / Omani woman in a pomegranate abaya with copper embroidery"
+    />
+    <meta property="og:locale" content="ar_OM" />
+    <meta property="og:locale:alternate" content="en_GB" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MB Design | عبايات عُمانية معاصرة — Contemporary Omani abayas" />
+    <meta
+      name="twitter:description"
+      content="ألوان مستوحاة من أرض عُمان، بقصّات تعيش اليوم. Colours drawn from Oman, cut for the present."
+    />
+    <meta name="twitter:image" content="https://mbdesign-store.vercel.app/og/mb-design-og.jpg" />
     <link rel="icon" href="/brand/mb-design-symbol.svg" type="image/svg+xml" />
     <link rel="icon" href="/icons/mb-design-favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/icons/mb-design-apple-touch-icon.png" sizes="180x180" />
     <link rel="mask-icon" href="/brand/mb-design-logo-monochrome.svg" color="#B8744D" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="preload" href="/assets/collection-v2/hero-plum.webp" as="image" type="image/webp" />
-    <title>MB Design</title>
+    <!-- Same file as the hero <img> src, so the preload is reused rather than fetched twice. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="/assets/collection-v2/hero-plum.webp"
+    />
+    <!-- Applies a saved English choice before first paint, so the static page never flashes
+         right-to-left while the bundle loads. Storage can throw (private mode), hence the try. -->
+    <script>
+      try {
+        if (JSON.parse(localStorage.getItem('mbd.locale')) === 'en') {
+          document.documentElement.lang = 'en';
+          document.documentElement.dir = 'ltr';
+        }
+      } catch (error) {}
+    </script>
+    <title>MB Design | عبايات عُمانية معاصرة — Contemporary Omani abayas</title>
   </head>
   <body>
     <div id="root"></div>

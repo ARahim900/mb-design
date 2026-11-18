@@ -30,7 +30,7 @@ export function Story({ locale }: StoryProps) {
             {localize(copy.story.title, locale === 'ar' ? 'en' : 'ar')}
           </p>
           <span className="my-7 block h-px w-16 bg-copper" aria-hidden="true" />
-          <p className="max-w-md text-base leading-8 text-shade sm:text-lg sm:leading-9">
+          <p className="max-w-md text-base leading-8 text-ink/75 sm:text-lg sm:leading-9">
             {localize(copy.story.body, locale)}
           </p>
           <a className="mt-8 inline-flex min-h-11 items-center gap-3 border-b border-copper pb-2 text-sm text-date transition-colors hover:text-pomegranate focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper" href="#collection">

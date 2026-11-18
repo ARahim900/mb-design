@@ -30,7 +30,7 @@ export interface BrandFacts {
   readonly sizeChart: readonly SizeRow[];
   /** Delivery fee in OMR inside Oman. null = not confirmed. 0 = free. */
   readonly deliveryFeeOmr: number | null;
-  /** Expected delivery window, e.g. { ar: '٢–٤ أيام عمل', en: '2–4 working days' }. */
+  /** Expected delivery window, e.g. { ar: '2–4 أيام عمل', en: '2–4 working days' }. */
   readonly deliveryTime: LocalizedText | null;
   /** One-line returns summary shown above Add to bag. */
   readonly returnsSummary: LocalizedText | null;
