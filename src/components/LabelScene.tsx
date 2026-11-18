@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { type CSSProperties, useRef } from 'react';
 import { copy, localize } from '../data/content';
 import { pinnedProgress, useScrollProgress } from '../hooks/useScrollProgress';
 import type { Locale } from '../types';
@@ -9,6 +9,9 @@ interface LabelSceneProps {
 
 /** The neckline the label hangs from, shared by the fabric edge, collar band and seam. */
 const NECKLINE = 'M0 150 Q300 250 600 150';
+
+/** Scroll lag of each copy of the mark: two echoes first so the lead mark paints on top. */
+const MARK_LAGS = [0.07, 0.035, 0] as const;
 
 export function LabelScene({ locale }: LabelSceneProps) {
   const sceneRef = useRef<HTMLElement>(null);
@@ -61,11 +64,24 @@ export function LabelScene({ locale }: LabelSceneProps) {
               <path d={NECKLINE} fill="none" stroke="#B8744D" strokeWidth="1.4" strokeDasharray="5 5" transform="translate(0 11)" mask="url(#seam-reveal)" />
             </svg>
 
+            {/* The woven patch appears only once the travelling mark has locked into place. */}
             <div className="label-scene__label">
               <span className="label-scene__stitch label-scene__stitch--start" aria-hidden="true" />
-              <img src="/brand/mb-design-logo-light.svg" alt="" width={597} height={445} className="relative h-[92%] w-auto" />
               <span className="label-scene__stitch label-scene__stitch--end" aria-hidden="true" />
             </div>
+            <span className="label-scene__pulse" aria-hidden="true" />
+
+            {/* The mark and two trailing echoes share one flight path, each a step behind. */}
+            {MARK_LAGS.map((lag) => (
+              <span
+                key={lag}
+                className={`label-scene__mark ${lag > 0 ? 'label-scene__mark--echo' : ''}`}
+                style={{ '--lag': lag } as CSSProperties}
+                aria-hidden="true"
+              >
+                <img src="/brand/mb-design-logo-light.svg" alt="" width={597} height={445} className="h-[92%] w-auto" />
+              </span>
+            ))}
 
             <div className="label-scene__caption" aria-hidden="true">
               <span className="label-scene__leader" />
