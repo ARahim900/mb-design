@@ -11,6 +11,17 @@ export interface GalleryImage {
   readonly position?: string;
 }
 
+export interface LookbookLook {
+  readonly id: string;
+  /** Instagram reel shortcode; the card links to the reel. */
+  readonly reel: string;
+  readonly src: string;
+  readonly srcSmall: string;
+  readonly width: number;
+  readonly height: number;
+  readonly alt: LocalizedText;
+}
+
 export interface Product {
   readonly id: string;
   readonly name: LocalizedText;
