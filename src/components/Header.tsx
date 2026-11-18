@@ -1,9 +1,13 @@
 import { Menu, ShoppingBag, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { copy, formatNumber, localize } from '../data/content';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
+import { useScrollProgress } from '../hooks/useScrollProgress';
 import type { Locale } from '../types';
-import { BrandWordmark } from './BrandWordmark';
+import { BrandSeal } from './BrandSeal';
+
+/** The bar settles from open to solid over the first 140px of scroll. */
+const headerProgress = () => window.scrollY / 140;
 
 interface HeaderProps {
   readonly locale: Locale;
@@ -14,23 +18,16 @@ interface HeaderProps {
 
 export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const alternateLocale: Locale = locale === 'ar' ? 'en' : 'ar';
   const navLabel = localize(copy.nav.label, locale);
   const bagLabel = localize(copy.header.bag, locale);
-  const solid = scrolled || menuOpen;
 
   // The panel covers the page, so the page behind it must not scroll — otherwise a swipe
   // aimed at the menu drags the storefront underneath and the reader loses their place.
   useModalScrollLock(menuOpen);
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 24);
-
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  useScrollProgress(headerRef, headerProgress);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -59,8 +56,13 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 border-b pt-[env(safe-area-inset-top)] text-pearl transition-colors duration-300 motion-reduce:transition-none ${solid ? 'border-copper/50 bg-date/95 backdrop-blur-md' : 'border-copper/40 bg-date/5 backdrop-blur-[2px]'}`}
+      ref={headerRef}
+      data-menu-open={menuOpen || undefined}
+      className="site-header fixed inset-x-0 top-0 z-40 pt-[env(safe-area-inset-top)] text-pearl"
     >
+      <span className="site-header__scrim" aria-hidden="true" />
+      <span className="site-header__bar" aria-hidden="true" />
+      <span className="site-header__rule" aria-hidden="true" />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-50 focus:border focus:border-copper focus:bg-date focus:px-4 focus:py-3 focus:text-sm focus:text-pearl"
@@ -68,7 +70,7 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
         {localize(copy.header.skip, locale)}
       </a>
 
-      <div className="mx-auto grid h-[76px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-safe [--gutter:0.75rem] sm:h-[82px] sm:[--gutter:1.5rem] lg:h-[98px] lg:[--gutter:2.5rem]">
+      <div className="relative mx-auto grid h-[76px] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-safe [--gutter:0.75rem] sm:h-[82px] sm:[--gutter:1.5rem] lg:h-[98px] lg:[--gutter:2.5rem]">
         <div className="flex items-center justify-self-start">
           <button
             type="button"
@@ -93,7 +95,7 @@ export function Header({ locale, cartCount, onLocaleChange, onCartOpen }: Header
           className="justify-self-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper"
           aria-label="MB Design"
         >
-          <BrandWordmark tone="light" />
+          <BrandSeal />
         </a>
 
         <div className="flex items-center justify-self-end gap-1 sm:gap-3">
